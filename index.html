@@ -1018,8 +1018,9 @@ async function doUpload(){
  const btn=$("m-submit");btn.disabled=true;btn.textContent="업로드 중...";
  try{
   for(const file of picked){
-   const path=`${churchId}/${Date.now()}_${Math.random().toString(36).slice(2,8)}_${file.name}`;
-   const{error:upErr}=await sb.storage.from(PHOTO_BUCKET).upload(path,file);
+   const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
+   const path=`${churchId}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
+   const{error:upErr}=await sb.storage.from(PHOTO_BUCKET).upload(path,file,{contentType:file.type||"image/jpeg"});
    if(upErr)throw upErr;
    const{error:insErr}=await sb.from("photos").insert({church_id:churchId,ministry_type:ministry,caption,storage_path:path});
    if(insErr)throw insErr;
