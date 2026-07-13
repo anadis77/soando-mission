@@ -419,7 +419,19 @@ input{font-family:inherit;outline:none}
 .rc-a{font-size:13.5px;font-weight:500;font-variant-numeric:tabular-nums;margin-left:auto}
 .pad{padding:26px}
 .pt{font-size:15px;font-weight:700;margin-bottom:18px}
-.pb64{padding-bottom:90px}
+.pb64{padding-bottom:110px}
+/* 하단 고정 액션바 (메인·교회에서 항상 보이는 올리기 버튼) */
+.actionbar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:none;
+  background:rgba(255,255,255,.9);backdrop-filter:saturate(180%) blur(16px);-webkit-backdrop-filter:saturate(180%) blur(16px);
+  border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.actionbar.on{display:block}
+.actionbar-in{display:flex;gap:10px;max-width:600px;margin:0 auto}
+.actionbar button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;height:50px;border-radius:14px;font-size:14.5px;font-weight:700;transition:.15s}
+.actionbar button svg{width:18px;height:18px}
+.actionbar .ab-photo{background:var(--sky-d);color:#fff}
+.actionbar .ab-photo:hover{background:#1276ab}
+.actionbar .ab-pray{background:var(--cor);color:#fff}
+.actionbar .ab-pray:hover{background:var(--cor-d)}
 .pt44{padding-top:44px}
 
 @media(max-width:1000px){
@@ -568,9 +580,6 @@ input{font-family:inherit;outline:none}
           <h2 class="sec-t">사역 현장</h2>
           <p class="sec-s">최신 20개 · 전체는 교회별 앨범에서 확인하세요</p>
         </div>
-        <button class="btn-p" onclick="openM()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>사진 올리기
-        </button>
       </div>
       <div class="marquee" id="photos"></div>
     </section>
@@ -582,9 +591,6 @@ input{font-family:inherit;outline:none}
           <h2 class="sec-t">섬마을 사람들</h2>
           <p class="sec-s">이웃들의 기도제목을 함께 나눕니다</p>
         </div>
-        <button class="btn-p pray" onclick="openPray()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>기도제목 나누기
-        </button>
       </div>
       <div class="pr-sum">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
@@ -644,9 +650,6 @@ input{font-family:inherit;outline:none}
     <section class="sec">
       <div class="sec-h">
         <div><h2 class="sec-t">사역 앨범</h2><p class="sec-s" id="ch-album-cnt">0장</p></div>
-        <button class="btn-p" onclick="openM()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>사진 올리기
-        </button>
       </div>
       <div class="mi-filter" id="ch-mi-filter"></div>
       <div class="grid g4" id="ch-album"></div>
@@ -656,9 +659,6 @@ input{font-family:inherit;outline:none}
     <section class="sec">
       <div class="sec-h">
         <div><h2 class="sec-t">선교 소감·감사</h2><p class="sec-s">이곳에서 느낀 점, 감사한 순간, 짧은 기도를 자유롭게 나눠보세요</p></div>
-        <button class="btn-p pray" onclick="openMemo()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>소감 남기기
-        </button>
       </div>
       <div id="ch-memos"></div>
       <div id="ch-memo-pager"></div>
@@ -868,6 +868,8 @@ input{font-family:inherit;outline:none}
     </div>
   </div>
 </div>
+
+<div class="actionbar" id="actionbar"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
@@ -1199,7 +1201,22 @@ $("m-mi").innerHTML=MI.map(m=>`<button class="chip" data-v="${m}" onclick="pick(
 let cur=0;
 function go(p){
  document.querySelectorAll(".page").forEach(e=>e.classList.remove("on"));
- $("p-"+p).classList.add("on");scrollTo(0,0)}
+ $("p-"+p).classList.add("on");scrollTo(0,0);updateActionBar(p)}
+const AB_CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+const AB_HEART='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
+const AB_PEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>';
+function updateActionBar(p){
+ const bar=$("actionbar");
+ if(p==="home"){
+  bar.innerHTML=`<div class="actionbar-in"><button class="ab-photo" onclick="openM()">${AB_CAM}사진 올리기</button><button class="ab-pray" onclick="openPray()">${AB_HEART}기도제목 나누기</button></div>`;
+  bar.classList.add("on");
+ }else if(p==="church"){
+  bar.innerHTML=`<div class="actionbar-in"><button class="ab-photo" onclick="openM()">${AB_CAM}사진 올리기</button><button class="ab-pray" onclick="openMemo()">${AB_PEN}소감 남기기</button></div>`;
+  bar.classList.add("on");
+ }else{
+  bar.classList.remove("on");bar.innerHTML="";
+ }
+}
 function openCh(i){cur=i;const c=CH[i];
  $("ch-top").textContent=c.n;$("ch-name").textContent=c.n;
  const tag=$("ch-tag");tag.className="tag "+c.c;
@@ -1315,6 +1332,7 @@ async function doUpload(){
 function pick(el,g){const p=$(g);
  [...p.children].forEach(c=>{c.classList.remove("on");c.innerHTML=c.textContent});
  el.classList.add("on");el.innerHTML=CHK+el.textContent}
+updateActionBar("home");
 </script>
 </body>
 </html>
