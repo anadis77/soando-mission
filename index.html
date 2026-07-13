@@ -202,6 +202,10 @@ input{font-family:inherit;outline:none}
 .scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px;margin:0 -22px;padding-left:22px;padding-right:22px;
   scroll-snap-type:x mandatory;scrollbar-width:none}
 .scroll::-webkit-scrollbar{display:none}
+/* 사역 현장 마퀴 — 사진이 왼쪽으로 끊김 없이 흐른다 (컴포지터 애니메이션) */
+.marquee{overflow:hidden;margin:0 -22px;padding:2px 22px 12px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.mq-track{display:flex;width:max-content;will-change:transform}
+.mq-track .ph{margin-right:12px}
 .ph{flex:0 0 auto;width:196px;scroll-snap-align:start;position:relative}
 .ph-img{height:196px;border-radius:var(--r2);border:1px solid var(--line);background-size:cover;background-position:center;box-shadow:var(--sh)}
 .ph-img svg{width:24px;height:24px;color:rgba(255,255,255,.8)}
@@ -515,7 +519,7 @@ input{font-family:inherit;outline:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>사진 올리기
         </button>
       </div>
-      <div class="scroll" id="photos"></div>
+      <div class="marquee" id="photos"></div>
     </section>
 
     <!-- 3. 기도제목 -->
@@ -876,33 +880,52 @@ function ttHTML(T){
  </div>`;
  return h;
 }
+let phMarqueeAnim=null;
 async function loadPhotos(){
  const{data,error}=await sb.from("photos").select(PHOTO_COLS).order("created_at",{ascending:false}).limit(20);
  if(error){console.error(error);return}
- $("photos").innerHTML=data.length?data.map(p=>{
+ const el=$("photos");
+ if(!data.length){el.innerHTML=`<p class="note">아직 올라온 사진이 없어요. 첫 사진을 올려보세요.</p>`;return;}
+ const cards=data.map(p=>{
   const url=sb.storage.from(PHOTO_BUCKET).getPublicUrl(p.storage_path).data.publicUrl;
   const c=CH.find(x=>x.id===p.church_id);
   return `<div class="ph">${isMine(p.id)?DEL_BTN(p.id):""}<div class="ph-img" style="background-image:url(${url})"></div>
-   <p class="ph-t">${p.ministry_type}</p><p class="ph-s">${c?c.n:p.church_id}</p></div>`}).join("")
-  :`<p class="note">아직 올라온 사진이 없어요. 첫 사진을 올려보세요.</p>`;
+   <p class="ph-t">${p.ministry_type}</p><p class="ph-s">${c?c.n:p.church_id}</p></div>`}).join("");
+ // 사진을 두 벌 이어 붙여 끊김 없이 순환시킨다
+ el.innerHTML=`<div class="mq-track">${cards}${cards}</div>`;
+ startPhotoMarquee();
+}
+/* 왼쪽으로 끊김 없이 흐르는 마퀴 — transform 애니메이션(컴포지터)이라 매끄럽다 */
+function startPhotoMarquee(){
+ const track=$("photos")&&$("photos").querySelector(".mq-track");
+ if(!track) return;
+ if(phMarqueeAnim){phMarqueeAnim.cancel();phMarqueeAnim=null;}
+ const run=()=>{
+  const setW=track.scrollWidth/2;              // 사진 한 벌의 너비 (두 벌 중 절반)
+  if(setW<=0){return;}
+  const SPEED=45;                              // px/초
+  phMarqueeAnim=track.animate(
+   [{transform:"translateX(0)"},{transform:`translateX(${-setW}px)`}],
+   {duration:(setW/SPEED)*1000, iterations:Infinity, easing:"linear"}
+  );
+ };
+ // 이미지 레이아웃이 잡힌 뒤 너비 측정
+ requestAnimationFrame(()=>requestAnimationFrame(run));
+ // 손대거나 마우스 올리면 잠깐 멈춤, 떼면 재개 (한 번만 연결)
+ const host=$("photos");
+ if(host&&!host.dataset.mqBound){
+  host.dataset.mqBound="1";
+  let resume=null;
+  const pause=()=>{clearTimeout(resume);phMarqueeAnim&&phMarqueeAnim.pause();};
+  const play=(delay)=>{clearTimeout(resume);resume=setTimeout(()=>phMarqueeAnim&&phMarqueeAnim.play(),delay||0);};
+  host.addEventListener("pointerenter",pause);
+  host.addEventListener("pointerleave",()=>play(0));
+  host.addEventListener("touchstart",pause,{passive:true});
+  host.addEventListener("touchend",()=>play(2000));
+  document.addEventListener("visibilitychange",()=>{document.hidden?pause():play(0);});
+ }
 }
 loadPhotos();
-
-/* 사역 현장 사진 — 자동으로 천천히 움직이는 캐러셀 (좌우 왕복, 손대면 잠깐 멈춤)
-   scrollLeft는 1px 미만 증가를 버리므로, 소수점 위치를 pos에 누적한 뒤 반영한다 */
-(function(){
- const el=$("photos"); if(!el) return;
- let pos=el.scrollLeft, dir=1, paused=false, resumeTimer=null;
- setInterval(()=>{
-  if(paused || el.scrollWidth<=el.clientWidth+4) return;
-  const max=el.scrollWidth-el.clientWidth;
-  pos+=dir*0.7;                       // 프레임당 0.7px (소수점은 pos에 누적)
-  if(pos>=max){pos=max;dir=-1;} else if(pos<=0){pos=0;dir=1;}
-  el.scrollLeft=pos;                  // scrollLeft가 정수로 잘려도 pos는 소수점 유지
- },16);
- const pause=()=>{paused=true;clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>{pos=el.scrollLeft;paused=false;},2600);};
- ["pointerdown","wheel","touchstart"].forEach(ev=>el.addEventListener(ev,pause,{passive:true}));
-})();
 
 /* 기도제목 — Supabase에서 불러오고, 이 기기에서 올린 것만 삭제 가능 */
 const PRAYED_KEY="soando_prayed", MYPR_KEY="soando_my_prayers";
