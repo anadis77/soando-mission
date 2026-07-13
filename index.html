@@ -99,7 +99,7 @@ input{font-family:inherit;outline:none}
 /* ---- timetable ---- */
 .tt-wrap{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;
   box-shadow:var(--sh);overflow-x:auto}
-.tt{border-collapse:collapse;width:100%;min-width:660px;table-layout:fixed}
+.tt{border-collapse:collapse;width:100%;min-width:880px;table-layout:fixed}
 .tt th,.tt td{border:1px solid var(--line2);padding:0;vertical-align:middle;text-align:center}
 .tt thead th{background:var(--isl-l);color:var(--tx);font-size:12.5px;font-weight:700;
   padding:11px 6px;letter-spacing:-.02em;border-color:var(--line)}
@@ -946,7 +946,7 @@ const TEAMS=[
 
 /* 교회별 시간표 (제공된 일정표 기준) */
 const CHTT={
- east:{"hours": ["07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"], "cols": ["16일 (목)", "17일 (금)", "18일 (토)", "19일 (주)"], "grid": [[[6, "emp", "", ""], [1, "meal", "점심 식사", ""], [1, "min", "도착 및 예배", ""], [2, "min", "사역 1", "버스킹/전도 · 벽화 · 전기"], [2, "meal", "저녁 식사", "개인 정비"], [2, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [4, "min", "사역 2", "이미용/사진/전도 · 벽화 · 도배·장판 · 전기"], [1, "meal", "점심 식사", ""], [4, "min", "사역 3", "이미용/사진/전도 · 벽화 · 도배·장판 · 전기"], [2, "meal", "저녁 식사", "개인 정비"], [1, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [4, "min", "사역 4", "벽화 · 도배·장판 · 전도_가정 · 전기"], [1, "meal", "점심 식사", ""], [3, "min", "사역 5", "벽화 · 도배·장판 · 전도_가정 · 전기"], [2, "all", "전체 모임", ""], [2, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [1, "min", "정리", ""], [2, "wor", "주일 예배", ""], [1, "min", "정리 및 출발", "소안항"], [2, "meal", "점심 식사", ""], [6, "emp", "", ""], [1, "min", "교회 도착", ""]]]}
+ east:{"hours": ["07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"], "cols": ["16일 (목)", "17일 (금)", "18일 (토)", "19일 (주)"], "grid": [[[6, "emp", "", ""], [1, "meal", "점심 식사", ""], [1, "min", "도착 및 예배", ""], [2, "min", "사역 1", "전도·버스킹: 마을회관 · 전기: 예배당 · 벽화: 마을입구 · 도배·장판: 마을회관"], [2, "meal", "저녁 식사", "개인 정비"], [2, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [4, "min", "사역 2", "전도: 마을회관(이미용·사진) · 전기: 예배당 · 벽화: 마을입구 · 버스킹: with 비자리교회 · 도배·장판: 가정방문"], [1, "meal", "점심 식사", ""], [4, "min", "사역 3", "전도: 마을회관(이미용·사진) · 전기: 식당 · 벽화: 마을입구 · 버스킹: with 소안미라교회 · 도배·장판: 가정방문"], [2, "meal", "저녁 식사", "개인 정비"], [1, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [4, "min", "사역 4", "전도·전기: 가정방문 · 벽화: 마을입구 · 버스킹: with 소안중앙교회 · 도배·장판: 가정방문"], [1, "meal", "점심 식사", ""], [3, "min", "사역 5", "전도·전기: 가정방문 · 벽화: 마을입구 · 버스킹: with 소안중앙교회 · 도배·장판: 가정방문"], [2, "all", "전체 모임", ""], [2, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [1, "min", "정리", ""], [2, "wor", "주일 예배", ""], [1, "min", "정리 및 출발", "소안항"], [2, "meal", "점심 식사", ""], [6, "emp", "", ""], [1, "min", "교회 도착", ""]]]}
 };
 const CAM='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
 const USR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
