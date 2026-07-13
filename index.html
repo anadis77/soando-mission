@@ -162,33 +162,11 @@ input{font-family:inherit;outline:none}
   background:#fff;color:var(--sky-d);box-shadow:0 2px 8px rgba(15,42,56,.08)}
 .mo-a svg{width:15px;height:15px}
 
-/* lightbox */
-.lbox{position:fixed;inset:0;z-index:60;background:rgba(9,30,40,.90);backdrop-filter:blur(8px);
-  display:none;align-items:center;justify-content:center;padding:0;cursor:zoom-out;
-  overflow:auto;-webkit-overflow-scrolling:touch}
-.lbox.on{display:flex}
-.lbox-in{position:relative;margin:auto;padding:52px 20px 28px;display:flex;flex-direction:column;
-  align-items:center;max-width:100%}
-.lbox img{display:block;width:auto;height:auto;
-  max-width:min(1360px,95vw);max-height:82vh;object-fit:contain;
-  border-radius:12px;background:#0E3B47;box-shadow:0 24px 70px rgba(0,0,0,.5);cursor:default}
-.lbox-t{color:#fff;font-size:13px;font-weight:500;margin-bottom:14px;opacity:.9;
-  display:flex;align-items:center;gap:6px;text-align:center}
-.lbox-t svg{width:14px;height:14px}
-.lbox-x{position:fixed;top:18px;right:18px;z-index:2;width:40px;height:40px;border-radius:50%;
-  display:grid;place-items:center;background:rgba(255,255,255,.14);color:#fff;
-  backdrop-filter:blur(6px);transition:.15s}
-.lbox-x:hover{background:rgba(255,255,255,.26)}
-.lbox-x svg{width:18px;height:18px}
-@media(max-width:760px){
-  .lbox{align-items:flex-start}
-  .lbox img{max-width:none;width:170vw;max-height:none}
-  .lbox-in{align-items:flex-start;padding:52px 16px 28px}
-}
 
 /* ---- section ---- */
 .sec{margin-bottom:56px}
-.sec-h{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;gap:12px}
+.sec-h{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;gap:10px 12px;flex-wrap:wrap}
+.sec-h>div:first-child{flex:1 1 150px}
 .sec-t{font-size:19px;font-weight:700;letter-spacing:-.03em}
 .sec-s{font-size:13px;color:var(--tx3);margin-top:3px;font-weight:400}
 
@@ -198,7 +176,11 @@ input{font-family:inherit;outline:none}
 .g3{grid-template-columns:repeat(3,1fr)}
 .g2{grid-template-columns:repeat(2,1fr)}
 .g5{grid-template-columns:repeat(5,1fr)}
-#teams,#cplist{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.tmc{flex:0 0 auto;width:184px;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 14px 12px;box-shadow:var(--sh)}
+.tmc-n{font-size:13px;font-weight:700;letter-spacing:-.02em;margin:9px 0 6px}
+.tmc-r{display:flex;flex-direction:column;gap:1px;padding:6px 0;border-top:1px solid var(--line2)}
+.tmc-r b{font-size:12px;font-weight:600;color:var(--tx)}
+.tmc-r span{font-size:11px;color:var(--tx3)}
 .g4{grid-template-columns:repeat(4,1fr)}
 
 .stat{padding:18px}
@@ -232,12 +214,18 @@ input{font-family:inherit;outline:none}
 .t4{background:linear-gradient(135deg,#2F5F96,#7C9FC8)}
 
 /* prayer */
-.pr{padding:20px;display:flex;flex-direction:column}
-.pr-h{display:flex;align-items:center;gap:11px;margin-bottom:13px}
+.pr{padding:18px;display:flex;flex-direction:column}
+.pr-h{margin-bottom:11px}
 .av{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;border:1.5px solid #fff;background-size:cover;background-position:center;box-shadow:0 1px 4px rgba(20,30,45,.10)}
 .av svg{width:17px;height:17px;color:rgba(255,255,255,.9)}
 .pr-n{font-size:13.5px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pr-v{font-size:11.5px;color:var(--tx3);margin-top:2px}
+.pr-nav{display:flex;align-items:center;gap:6px;background:#F1F4F7;border-radius:999px;padding:4px}
+.pr-nav button{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--tx2);transition:.15s}
+.pr-nav button:hover:not(:disabled){background:#fff;color:var(--tx)}
+.pr-nav button:disabled{opacity:.35;cursor:default}
+.pr-nav button svg{width:15px;height:15px}
+.pr-nav span{font-size:11.5px;font-weight:600;color:var(--tx3);min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
 .pr-b{font-size:13px;color:var(--tx2);line-height:1.66;flex:1;
   display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .pr-btn{margin-top:16px;width:100%;height:38px;border-radius:12px;background:var(--cor-l);color:var(--cor-d);
@@ -450,26 +438,11 @@ input{font-family:inherit;outline:none}
 .tr-safe .rule+.rule{margin-top:20px}
 @media(min-width:640px){.tr-safe .rules{display:grid;grid-template-columns:1fr 1fr;gap:24px}.tr-safe .rule+.rule{margin-top:0}}
 
-/* 협력 사역 일정 표 */
-.stt-wrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;box-shadow:var(--sh)}
-.stt{width:100%;border-collapse:collapse;table-layout:fixed}
-.stt th{background:var(--isl-l);color:var(--tx);font-size:12.5px;font-weight:700;text-align:left;padding:11px 14px}
-.stt th:first-child{width:34%}
-.stt td{border-top:1px solid var(--line2);padding:12px 14px;vertical-align:top}
-.stt-t{display:flex;flex-direction:column;gap:6px}
+/* 협력 사역 팀 배지 */
 .stt-b{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:700;width:fit-content}
 .stt-b.a{background:var(--cor-l);color:var(--cor-d)}
 .stt-b.b{background:var(--sky-l);color:var(--sky-d)}
 .stt-b.c{background:var(--nvy-l);color:var(--nvy-d)}
-.stt-n{font-size:13.5px;font-weight:700;color:var(--tx);letter-spacing:-.02em}
-.stt-c{display:block;font-size:12.5px;color:var(--tx2);line-height:1.5;padding:2px 0}
-.stt-c b{color:var(--tx);font-weight:600;margin-right:6px}
-@media(max-width:520px){
-  .stt th,.stt td{padding:10px 11px}
-  .stt th:first-child{width:38%}
-  .stt-n{font-size:12.5px}
-  .stt-c{font-size:12px}
-}
 .pr{position:relative}
 .btn-p.pray{background:var(--cor-l);color:var(--cor-d)}
 .btn-p.pray:hover{background:#F8DCD7}
@@ -486,6 +459,10 @@ input{font-family:inherit;outline:none}
     <div class="top-in">
       <div class="top-l"><span class="top-t">2026년 평촌드림교회 국내단기선교 소안도</span></div>
       <div class="top-r">
+        <a class="tbtn g" href="https://soando-portal.vercel.app/?page=home" target="_blank" rel="noopener" aria-label="소안도교회 홈페이지">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
+          <span>소안도교회</span>
+        </a>
         <button class="tbtn d" onclick="go('transport')" aria-label="여객선·교통편">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v11M4 17h16M4 17v2M20 17v2M4 9h16M8 21h.01M16 21h.01"/></svg>
           <span>교통편</span>
@@ -502,7 +479,7 @@ input{font-family:inherit;outline:none}
       <!-- 우: 선교 개요 + 일정 -->
       <div>
         <p class="ov-kick">MISSION OVERVIEW</p>
-        <h1 class="ov-t">사랑은 여기에 있으니, 소안도로 갑니다</h1>
+        <h1 class="ov-t">사랑은 여기에 있으니,<br class="m-br"> 소안도로 갑니다.</h1>
         <p class="ov-d">전남 완도군 소안도의 다섯 교회와 함께합니다. 마을 어르신들을 만나고, 손이 필요한 곳을 고치며, 복음을 전하는 3박 4일입니다.</p>
 
         <div class="ov-meta" id="meta"></div>
@@ -524,7 +501,7 @@ input{font-family:inherit;outline:none}
         <h2 class="sec-t">전체 협력 사역 일정</h2>
         <p class="sec-s">각 팀이 다섯 교회를 순회하며 사역합니다</p>
       </div></div>
-      <div id="teams"></div>
+      <div class="scroll" id="teams"></div>
     </section>
 
     <!-- 2. 사진 -->
@@ -548,19 +525,22 @@ input{font-family:inherit;outline:none}
           <h2 class="sec-t">섬마을 사람들</h2>
           <p class="sec-s">이웃들의 기도제목을 함께 나눕니다</p>
         </div>
-        <button class="btn-p pray" onclick="openPray()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>기도제목 나누기
-        </button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="pr-nav">
+            <button onclick="prPrev()" id="pr-prev" aria-label="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <span id="pr-page">1/1</span>
+            <button onclick="prNext()" id="pr-next" aria-label="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+          </div>
+          <button class="btn-p pray" onclick="openPray()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>기도제목 나누기
+          </button>
+        </div>
       </div>
       <div class="pr-sum">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-        지금까지 <b id="pr-total">0</b>개의 기도제목을 함께 나눴습니다 <span class="cnt" id="pr-cnt"></span>
+        지금까지 <b id="pr-total">0</b>개의 기도제목을 함께 나눴습니다
       </div>
-      <div class="grid g4" id="prayers"></div>
-      <button class="more" id="pr-more" onclick="morePR()">
-        더보기 <span class="more-n" id="pr-rest"></span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
-      </button>
+      <div class="grid g5" id="prayers"></div>
     </section>
 
     <!-- 4. 교회 -->
@@ -853,15 +833,14 @@ $("cplist").innerHTML=CH.map((c,i)=>`<button class="cp" onclick="openCh(${i})">
   <div class="cp-i" style="background-image:url(${CPIC[c.id]})"></div>
   <div class="cp-b"><p class="cp-n">${c.n}</p><p class="cp-s">사역 일정 · 앨범 ${ARR}</p></div>
 </button>`).join("");
-$("teams").innerHTML=`<div class="stt-wrap"><table class="stt">
-  <thead><tr><th>팀</th><th>사역 교회 · 일정</th></tr></thead>
-  <tbody>${TEAMS.map(x=>{
-    const cat=x.c==="tm-a"?"a":x.c==="tm-b"?"b":"c";
-    return `<tr>
-      <td class="stt-t"><span class="stt-b ${cat}">${x.g}</span><span class="stt-n">${x.t}</span></td>
-      <td>${x.r.map(([ch,w])=>`<span class="stt-c"><b>${ch}</b>${w}</span>`).join("")}</td>
-    </tr>`;}).join("")}</tbody>
-</table></div>`;
+$("teams").innerHTML=TEAMS.map(x=>{
+  const cat=x.c==="tm-a"?"a":x.c==="tm-b"?"b":"c";
+  return `<div class="tmc">
+    <span class="stt-b ${cat}">${x.g}</span>
+    <p class="tmc-n">${x.t}</p>
+    ${x.r.map(([ch,w])=>`<div class="tmc-r"><b>${ch}</b><span>${w}</span></div>`).join("")}
+  </div>`;
+}).join("");
 
 
 /* 시간표를 셀 병합(rowspan) 구조로 그립니다 */
@@ -909,6 +888,20 @@ async function loadPhotos(){
 }
 loadPhotos();
 
+/* 사역 현장 사진 — 자동으로 천천히 움직이는 캐러셀 (좌우 왕복, 손대면 잠깐 멈춤) */
+(function(){
+ const el=$("photos"); if(!el) return;
+ let dir=1, paused=false, resumeTimer=null;
+ setInterval(()=>{
+  if(paused || el.scrollWidth<=el.clientWidth+4) return;
+  el.scrollLeft+=dir*0.6;
+  if(el.scrollLeft+el.clientWidth>=el.scrollWidth-1) dir=-1;
+  else if(el.scrollLeft<=0) dir=1;
+ },16);
+ const pause=()=>{paused=true;clearTimeout(resumeTimer);resumeTimer=setTimeout(()=>paused=false,2600);};
+ ["pointerdown","wheel","touchstart"].forEach(ev=>el.addEventListener(ev,pause,{passive:true}));
+})();
+
 /* 기도제목 — Supabase에서 불러오고, 이 기기에서 올린 것만 삭제 가능 */
 const PRAYED_KEY="soando_prayed", MYPR_KEY="soando_my_prayers";
 let PRAYED={}; try{PRAYED=JSON.parse(localStorage.getItem(PRAYED_KEY)||"{}")}catch(e){PRAYED={}}
@@ -918,13 +911,12 @@ function addMyPrayer(id){const a=myPrayers();a.push(id);localStorage.setItem(MYP
 function removeMyPrayer(id){localStorage.setItem(MYPR_KEY,JSON.stringify(myPrayers().filter(x=>x!==id)));}
 function isMinePrayer(id){return myPrayers().includes(id);}
 
-let PRAYERS=[]; const PR_STEP=8; let prShown=PR_STEP;
+let PRAYERS=[]; const PR_PAGE=5; let prPageIdx=0;
 const prCard=p=>{
  const mine=isMinePrayer(p.id), prayed=!!PRAYED[p.id];
  return `<div class="card pr">
   ${mine?`<button class="del-x" title="삭제" onclick="delMinePrayer('${p.id}')">×</button>`:""}
-  <div class="pr-h"><div class="av t3">${USR}</div>
-    <div style="min-width:0"><p class="pr-n">${esc(p.name||"익명")}</p><p class="pr-v">${timeAgo(p.created_at)}</p></div></div>
+  <div class="pr-h"><p class="pr-n">${esc(p.name||"익명")}</p><p class="pr-v">${timeAgo(p.created_at)}</p></div>
   <p class="pr-b">${esc(p.content)}</p>
   <button class="pr-btn ${prayed?"on":""}" onclick="togglePray('${p.id}',this)">${HRT} ${prayed?"기도했어요":"함께 기도하기"}</button>
  </div>`;
@@ -935,20 +927,23 @@ function togglePray(id,btn){
  btn.innerHTML=`${HRT} ${PRAYED[id]?"기도했어요":"함께 기도하기"}`;
  if(PRAYED[id]){btn.classList.remove("pop");void btn.offsetWidth;btn.classList.add("pop")}
 }
+function prTotalPages(){return Math.max(1,Math.ceil(PRAYERS.length/PR_PAGE));}
 function drawPR(){
- $("prayers").innerHTML=PRAYERS.length?PRAYERS.slice(0,prShown).map(prCard).join("")
+ const start=prPageIdx*PR_PAGE;
+ $("prayers").innerHTML=PRAYERS.length?PRAYERS.slice(start,start+PR_PAGE).map(prCard).join("")
    :`<p class="note">아직 나눈 기도제목이 없어요. 첫 기도제목을 나눠보세요.</p>`;
- const rest=PRAYERS.length-prShown;
- $("pr-more").style.display=rest>0?"flex":"none";
- $("pr-rest").textContent=rest>0?rest:"";
- $("pr-cnt").textContent=PRAYERS.length?`${Math.min(prShown,PRAYERS.length)} / ${PRAYERS.length}`:"";
+ const totalPages=prTotalPages();
+ $("pr-page").textContent=`${PRAYERS.length?prPageIdx+1:1}/${totalPages}`;
+ $("pr-prev").disabled=prPageIdx<=0;
+ $("pr-next").disabled=prPageIdx>=totalPages-1;
  $("pr-total").textContent=PRAYERS.length.toLocaleString("ko-KR");
 }
-function morePR(){prShown+=PR_STEP;drawPR()}
+function prPrev(){if(prPageIdx>0){prPageIdx--;drawPR();}}
+function prNext(){if(prPageIdx<prTotalPages()-1){prPageIdx++;drawPR();}}
 async function loadPrayers(){
  const{data,error}=await sb.from("prayers").select("id,name,content,created_at").order("created_at",{ascending:false});
  if(error){console.error(error);return}
- PRAYERS=data||[]; drawPR();
+ PRAYERS=data||[]; prPageIdx=0; drawPR();
 }
 loadPrayers();
 
