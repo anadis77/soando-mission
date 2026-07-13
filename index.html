@@ -238,12 +238,12 @@ input{font-family:inherit;outline:none}
 .av svg{width:17px;height:17px;color:rgba(255,255,255,.9)}
 .pr-n{font-size:13.5px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pr-v{font-size:11.5px;color:var(--tx3);margin-top:2px}
-.pr-nav{display:flex;align-items:center;gap:6px;background:#F1F4F7;border-radius:999px;padding:4px}
-.pr-nav button{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--tx2);transition:.15s}
-.pr-nav button:hover:not(:disabled){background:#fff;color:var(--tx)}
-.pr-nav button:disabled{opacity:.35;cursor:default}
-.pr-nav button svg{width:15px;height:15px}
-.pr-nav span{font-size:11.5px;font-weight:600;color:var(--tx3);min-width:28px;text-align:center;font-variant-numeric:tabular-nums}
+/* 통일 페이저 (기도제목·앨범·메모 공통) */
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px}
+.pager .pgbtn{display:inline-flex;align-items:center;gap:4px;height:40px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--tx2);font-size:13px;font-weight:600;transition:.15s}
+.pager .pgbtn:hover:not(:disabled){border-color:var(--sky);color:var(--tx)}
+.pager .pgbtn:disabled{opacity:.4;cursor:default}
+.pager .pgnum{font-size:13px;font-weight:700;color:var(--tx2);font-variant-numeric:tabular-nums;min-width:54px;text-align:center}
 .pr-b{font-size:13px;color:var(--tx2);line-height:1.66;flex:1;
   display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .pr-btn{margin-top:16px;width:100%;height:38px;border-radius:12px;background:var(--cor-l);color:var(--cor-d);
@@ -582,22 +582,16 @@ input{font-family:inherit;outline:none}
           <h2 class="sec-t">섬마을 사람들</h2>
           <p class="sec-s">이웃들의 기도제목을 함께 나눕니다</p>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div class="pr-nav">
-            <button onclick="prPrev()" id="pr-prev" aria-label="이전"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
-            <span id="pr-page">1/1</span>
-            <button onclick="prNext()" id="pr-next" aria-label="다음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
-          </div>
-          <button class="btn-p pray" onclick="openPray()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>기도제목 나누기
-          </button>
-        </div>
+        <button class="btn-p pray" onclick="openPray()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>기도제목 나누기
+        </button>
       </div>
       <div class="pr-sum">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
         지금까지 <b id="pr-total">0</b>개의 기도제목을 함께 나눴습니다
       </div>
       <div class="grid g5" id="prayers"></div>
+      <div id="pr-pager"></div>
     </section>
 
     <!-- 4. 교회 -->
@@ -656,6 +650,7 @@ input{font-family:inherit;outline:none}
       </div>
       <div class="mi-filter" id="ch-mi-filter"></div>
       <div class="grid g4" id="ch-album"></div>
+      <div id="ch-album-pager"></div>
     </section>
 
     <section class="sec">
@@ -666,6 +661,7 @@ input{font-family:inherit;outline:none}
         </button>
       </div>
       <div id="ch-memos"></div>
+      <div id="ch-memo-pager"></div>
     </section>
   </div>
 </div>
@@ -1089,6 +1085,16 @@ function addMyPrayer(id){const a=myPrayers();a.push(id);localStorage.setItem(MYP
 function removeMyPrayer(id){localStorage.setItem(MYPR_KEY,JSON.stringify(myPrayers().filter(x=>x!==id)));}
 function isMinePrayer(id){return myPrayers().includes(id);}
 
+/* 통일 페이저 HTML — page(0-base), total(총 페이지), fn(델타 받는 함수명) */
+function pagerHTML(page,total,fn){
+ if(total<=1) return "";
+ return `<div class="pager">
+  <button class="pgbtn" ${page<=0?"disabled":""} onclick="${fn}(-1)">‹ 이전</button>
+  <span class="pgnum">${page+1} / ${total}</span>
+  <button class="pgbtn" ${page>=total-1?"disabled":""} onclick="${fn}(1)">다음 ›</button>
+ </div>`;
+}
+
 let PRAYERS=[]; const PR_PAGE=5; let prPageIdx=0;
 const prCard=p=>{
  const mine=isMinePrayer(p.id), prayed=!!PRAYED[p.id];
@@ -1105,19 +1111,16 @@ function togglePray(id,btn){
  btn.innerHTML=`${HRT} ${PRAYED[id]?"기도했어요":"함께 기도하기"}`;
  if(PRAYED[id]){btn.classList.remove("pop");void btn.offsetWidth;btn.classList.add("pop")}
 }
-function prTotalPages(){return Math.max(1,Math.ceil(PRAYERS.length/PR_PAGE));}
 function drawPR(){
+ const total=Math.max(1,Math.ceil(PRAYERS.length/PR_PAGE));
+ prPageIdx=Math.min(total-1,Math.max(0,prPageIdx));
  const start=prPageIdx*PR_PAGE;
  $("prayers").innerHTML=PRAYERS.length?PRAYERS.slice(start,start+PR_PAGE).map(prCard).join("")
    :`<p class="note">아직 나눈 기도제목이 없어요. 첫 기도제목을 나눠보세요.</p>`;
- const totalPages=prTotalPages();
- $("pr-page").textContent=`${PRAYERS.length?prPageIdx+1:1}/${totalPages}`;
- $("pr-prev").disabled=prPageIdx<=0;
- $("pr-next").disabled=prPageIdx>=totalPages-1;
+ $("pr-pager").innerHTML=pagerHTML(prPageIdx,PRAYERS.length?total:1,"prPage");
  $("pr-total").textContent=PRAYERS.length.toLocaleString("ko-KR");
 }
-function prPrev(){if(prPageIdx>0){prPageIdx--;drawPR();}}
-function prNext(){if(prPageIdx<prTotalPages()-1){prPageIdx++;drawPR();}}
+function prPage(d){const total=Math.max(1,Math.ceil(PRAYERS.length/PR_PAGE));prPageIdx=Math.min(total-1,Math.max(0,prPageIdx+d));drawPR();}
 async function loadPrayers(){
  const{data,error}=await sb.from("prayers").select("id,name,content,created_at").order("created_at",{ascending:false});
  if(error){console.error(error);return}
@@ -1156,13 +1159,21 @@ function isMineMemo(id){return myMemos().includes(id);}
 const memoCard=m=>`<div class="memo">${isMineMemo(m.id)?`<button class="del-x" title="삭제" onclick="delMineMemo('${m.id}')">×</button>`:""}
   <div class="memo-h"><span class="memo-n">${esc(m.name||"익명")}</span><span class="memo-v">${timeAgo(m.created_at)}</span></div>
   <p class="memo-b">${esc(m.content)}</p></div>`;
+let MEMOS=[]; const MEMO_PAGE=6; let memoPageIdx=0;
 async function loadMemos(churchId){
  const{data,error}=await sb.from("memos").select("id,name,content,created_at,church_id").eq("church_id",churchId).order("created_at",{ascending:false});
  if(error){console.error(error);return}
- const list=data||[];
- $("ch-memos").innerHTML=list.length?`<div class="memo-list">${list.map(memoCard).join("")}</div>`
-   :`<p class="note">아직 남긴 메모가 없어요. 첫 메모를 남겨보세요.</p>`;
+ MEMOS=data||[]; memoPageIdx=0; drawMemos();
 }
+function drawMemos(){
+ const total=Math.max(1,Math.ceil(MEMOS.length/MEMO_PAGE));
+ memoPageIdx=Math.min(total-1,Math.max(0,memoPageIdx));
+ const list=MEMOS.slice(memoPageIdx*MEMO_PAGE,memoPageIdx*MEMO_PAGE+MEMO_PAGE);
+ $("ch-memos").innerHTML=MEMOS.length?`<div class="memo-list">${list.map(memoCard).join("")}</div>`
+   :`<p class="note">아직 남긴 메모가 없어요. 첫 메모를 남겨보세요.</p>`;
+ $("ch-memo-pager").innerHTML=pagerHTML(memoPageIdx,MEMOS.length?total:1,"memoPage");
+}
+function memoPage(d){const total=Math.max(1,Math.ceil(MEMOS.length/MEMO_PAGE));memoPageIdx=Math.min(total-1,Math.max(0,memoPageIdx+d));drawMemos();}
 function openMemo(){$("memo-ch-name").textContent=CH[cur].n;$("memo-name").value="";$("memo-content").value="";$("memomask").classList.add("on");}
 function closeMemo(){$("memomask").classList.remove("on");}
 async function doMemo(){
@@ -1214,11 +1225,11 @@ function openCh(i){cur=i;const c=CH[i];
  loadMemos(c.id);
  go("church")}
 
-let albumPhotos=[], albumFilter="전체";
+let albumPhotos=[], albumFilter="전체", albumPageIdx=0; const ALBUM_PAGE=8;
 async function renderAlbum(churchId){
  const{data,error}=await sb.from("photos").select(PHOTO_COLS).eq("church_id",churchId).order("created_at",{ascending:false});
  if(error){console.error(error);return}
- albumPhotos=data||[]; albumFilter="전체";
+ albumPhotos=data||[]; albumFilter="전체"; albumPageIdx=0;
  drawAlbumFilter(); drawAlbum();
 }
 function drawAlbumFilter(){
@@ -1231,10 +1242,15 @@ function drawAlbumFilter(){
   return `<button class="fchip ${m===albumFilter?'on':''}" onclick="setAlbumFilter('${m}')">${m}<span>${n}</span></button>`;
  }).join("");
 }
-function setAlbumFilter(m){albumFilter=m;drawAlbumFilter();drawAlbum();}
+function setAlbumFilter(m){albumFilter=m;albumPageIdx=0;drawAlbumFilter();drawAlbum();}
+function albumPage(d){const listAll=albumFilter==="전체"?albumPhotos:albumPhotos.filter(p=>p.ministry_type===albumFilter);const total=Math.max(1,Math.ceil(listAll.length/ALBUM_PAGE));albumPageIdx=Math.min(total-1,Math.max(0,albumPageIdx+d));drawAlbum();}
 function drawAlbum(){
- const list=albumFilter==="전체"?albumPhotos:albumPhotos.filter(p=>p.ministry_type===albumFilter);
- const cnt=$("ch-album-cnt");if(cnt)cnt.textContent=`${list.length}장${albumFilter!=="전체"?" · "+albumFilter:""}`;
+ const listAll=albumFilter==="전체"?albumPhotos:albumPhotos.filter(p=>p.ministry_type===albumFilter);
+ const total=Math.max(1,Math.ceil(listAll.length/ALBUM_PAGE));
+ albumPageIdx=Math.min(total-1,Math.max(0,albumPageIdx));
+ const list=listAll.slice(albumPageIdx*ALBUM_PAGE,albumPageIdx*ALBUM_PAGE+ALBUM_PAGE);
+ const cnt=$("ch-album-cnt");if(cnt)cnt.textContent=`${listAll.length}장${albumFilter!=="전체"?" · "+albumFilter:""}`;
+ $("ch-album-pager").innerHTML=pagerHTML(albumPageIdx,listAll.length?total:1,"albumPage");
  $("ch-album").innerHTML=list.length?list.map(p=>{
   const url=sb.storage.from(PHOTO_BUCKET).getPublicUrl(p.storage_path).data.publicUrl;
   const d=new Date(p.created_at);
