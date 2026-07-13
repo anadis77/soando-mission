@@ -79,6 +79,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun 
   <div class="tabs">
     <button id="tab-photos" class="on" onclick="setTab('photos')">사진</button>
     <button id="tab-prayers" onclick="setTab('prayers')">기도제목</button>
+    <button id="tab-memos" onclick="setTab('memos')">소감</button>
   </div>
 
   <div id="view-photos">
@@ -95,6 +96,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun 
       <button class="refresh" onclick="loadPrayers()">새로고침</button>
     </div>
     <div id="plist"></div>
+  </div>
+
+  <div id="view-memos" class="hidden">
+    <div class="bar">
+      <span class="cnt">전체 <b id="mtotal">0</b>개</span>
+      <button class="refresh" onclick="loadMemos()">새로고침</button>
+    </div>
+    <div id="mlist"></div>
   </div>
 </div>
 
@@ -128,8 +137,10 @@ async function apiDelete(id,token,type){
 function setTab(t){
  $("tab-photos").classList.toggle("on",t==="photos");
  $("tab-prayers").classList.toggle("on",t==="prayers");
+ $("tab-memos").classList.toggle("on",t==="memos");
  $("view-photos").classList.toggle("hidden",t!=="photos");
  $("view-prayers").classList.toggle("hidden",t!=="prayers");
+ $("view-memos").classList.toggle("hidden",t!=="memos");
 }
 
 async function unlock(){
@@ -145,6 +156,7 @@ async function unlock(){
   $("app").classList.remove("hidden");
   await load();
   loadPrayers();
+  loadMemos();
  }catch(e){$("gate-err").textContent="연결 문제가 생겼어요. 다시 시도해주세요";}
  finally{btn.disabled=false;btn.textContent="확인";}
 }
@@ -196,6 +208,32 @@ async function loadPrayers(){
 async function delPrayer(id){
  if(!confirm("이 기도제목을 삭제할까요? 되돌릴 수 없어요."))return;
  try{await apiDelete(id,PW,"prayer");await loadPrayers();}
+ catch(e){alert("삭제 중 문제가 생겼어요: "+e.message);}
+}
+
+async function loadMemos(){
+ const{data,error}=await sb.from("memos").select("id,church_id,name,content,created_at").order("created_at",{ascending:false});
+ if(error){$("mlist").innerHTML=`<p class="empty">목록을 불러오지 못했어요.</p>`;return}
+ $("mtotal").textContent=data.length;
+ if(!data.length){$("mlist").innerHTML=`<p class="empty">아직 남긴 소감이 없습니다.</p>`;return}
+ const byCh={};data.forEach(m=>{(byCh[m.church_id]=byCh[m.church_id]||[]).push(m);});
+ let html="";
+ CH.forEach(c=>{
+  const arr=byCh[c.id];if(!arr||!arr.length)return;
+  html+=`<div class="church"><h3>${c.n}<span>${arr.length}개</span></h3><div class="plist">`+
+   arr.map(m=>`<div class="pcard">
+     <button class="del" title="삭제" onclick="delMemo('${m.id}')">×</button>
+     <p class="pn">${esc(m.name||"익명")}</p>
+     <p class="pv">${timeAgo(m.created_at)}</p>
+     <p class="pb">${esc(m.content)}</p>
+   </div>`).join("")+`</div></div>`;
+ });
+ $("mlist").innerHTML=html||`<p class="empty">아직 남긴 소감이 없습니다.</p>`;
+}
+
+async function delMemo(id){
+ if(!confirm("이 소감을 삭제할까요? 되돌릴 수 없어요."))return;
+ try{await apiDelete(id,PW,"memo");await loadMemos();}
  catch(e){alert("삭제 중 문제가 생겼어요: "+e.message);}
 }
 </script>

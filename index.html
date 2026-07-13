@@ -306,13 +306,14 @@ input{font-family:inherit;outline:none}
 .fchip.on{background:var(--tx);border-color:var(--tx);color:#fff}
 .fchip span{font-size:11px;opacity:.6;font-variant-numeric:tabular-nums}
 .fchip.on span{opacity:.75}
-/* 교회 메모 */
-.memo-list{display:flex;flex-direction:column;gap:10px}
-.memo{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:var(--sh)}
-.memo-h{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+/* 선교 소감·감사 (메모) */
+.memo-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.memo{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--sh);display:flex;flex-direction:column}
+.memo-h{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;padding-right:22px}
 .memo-n{font-size:13px;font-weight:700;letter-spacing:-.02em}
 .memo-v{font-size:11px;color:var(--tx3)}
-.memo-b{font-size:13.5px;color:var(--tx2);line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.memo-b{font-size:13.5px;color:var(--tx2);line-height:1.6;white-space:pre-wrap;word-break:break-word;
+  display:-webkit-box;-webkit-line-clamp:8;-webkit-box-orient:vertical;overflow:hidden}
 .memo .del-x{width:27px;height:27px;line-height:27px;font-size:16px;top:10px;right:10px}
 
 .btn-p{display:flex;align-items:center;gap:6px;padding:0 16px;height:40px;border-radius:999px;
@@ -623,9 +624,9 @@ input{font-family:inherit;outline:none}
 
     <section class="sec">
       <div class="sec-h">
-        <div><h2 class="sec-t">교회 메모</h2><p class="sec-s">이 교회에 남기는 기록·메모입니다</p></div>
+        <div><h2 class="sec-t">선교 소감·감사</h2><p class="sec-s">이곳에서 느낀 점, 감사한 순간, 짧은 기도를 자유롭게 나눠보세요</p></div>
         <button class="btn-p pray" onclick="openMemo()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>메모 남기기
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>소감 남기기
         </button>
       </div>
       <div id="ch-memos"></div>
@@ -773,15 +774,15 @@ input{font-family:inherit;outline:none}
 <div class="mask" id="memomask" onclick="if(event.target===this)closeMemo()">
   <div class="modal">
     <div class="m-h">
-      <span class="m-t"><span id="memo-ch-name">교회</span> 메모 남기기</span>
+      <span class="m-t"><span id="memo-ch-name">교회</span> 소감 남기기</span>
       <button class="m-x" onclick="closeMemo()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="m-b">
-      <label class="lb">작성자 <span class="opt">(선택)</span></label>
+      <label class="lb">이름 <span class="opt">(선택)</span></label>
       <input class="inp" id="memo-name" placeholder="예) 이미용팀 · 김집사" maxlength="40">
-      <label class="lb">메모 <span class="req">*</span></label>
-      <textarea class="inp ta" id="memo-content" rows="4" placeholder="현장에서 공유할 내용을 남겨주세요. (예: 다음 팀 인계사항, 어르신 특이사항)" maxlength="500"></textarea>
-      <p class="note">이 메모는 해당 교회 페이지에 함께 기록됩니다.</p>
+      <label class="lb">느낀 점 · 감사 · 기도 <span class="req">*</span></label>
+      <textarea class="inp ta" id="memo-content" rows="4" placeholder="선교하며 느낀 점, 감사했던 순간, 짧은 기도 등을 자유롭게 적어주세요." maxlength="500"></textarea>
+      <p class="note">여기 남긴 글은 이 교회 페이지에서 함께 볼 수 있어요.</p>
     </div>
     <div class="m-f">
       <button class="btn-gray" onclick="closeMemo()">취소</button>
