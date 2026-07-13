@@ -41,6 +41,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun 
 .cell .del:hover{background:rgba(214,52,52,.95)}
 .empty{text-align:center;color:var(--tx3);font-size:13px;padding:50px 0}
 .hidden{display:none}
+/* tabs */
+.tabs{display:flex;gap:6px;background:#EDF2F5;border-radius:999px;padding:4px;margin-bottom:18px;width:fit-content}
+.tabs button{border:none;background:none;padding:8px 18px;border-radius:999px;font-size:13px;font-weight:700;color:var(--tx3);cursor:pointer;transition:.15s}
+.tabs button.on{background:#fff;color:var(--tx);box-shadow:var(--sh)}
+/* prayers */
+.pcard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r2);padding:15px 16px;box-shadow:var(--sh)}
+.pcard .pn{font-size:13px;font-weight:700}
+.pcard .pv{font-size:11px;color:var(--tx3);margin:2px 0 8px}
+.pcard .pb{font-size:13px;color:var(--tx2);line-height:1.6;white-space:pre-wrap;word-break:break-word;padding-right:30px}
+.pcard .del{position:absolute;top:12px;right:12px;width:26px;height:26px;border:none;border-radius:50%;background:rgba(20,28,38,.6);color:#fff;font-size:15px;line-height:26px;text-align:center;cursor:pointer}
+.pcard .del:hover{background:rgba(214,52,52,.95)}
+.plist{display:flex;flex-direction:column;gap:10px}
 </style>
 </head>
 <body>
@@ -62,13 +74,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun 
   <button id="gate-btn" onclick="unlock()">확인</button>
 </div>
 
-<!-- 갤러리 -->
+<!-- 관리 -->
 <div id="app" class="wrap hidden">
-  <div class="bar">
-    <span class="cnt">전체 <b id="total">0</b>장</span>
-    <button class="refresh" onclick="load()">새로고침</button>
+  <div class="tabs">
+    <button id="tab-photos" class="on" onclick="setTab('photos')">사진</button>
+    <button id="tab-prayers" onclick="setTab('prayers')">기도제목</button>
   </div>
-  <div id="list"></div>
+
+  <div id="view-photos">
+    <div class="bar">
+      <span class="cnt">전체 <b id="total">0</b>장</span>
+      <button class="refresh" onclick="load()">새로고침</button>
+    </div>
+    <div id="list"></div>
+  </div>
+
+  <div id="view-prayers" class="hidden">
+    <div class="bar">
+      <span class="cnt">전체 <b id="ptotal">0</b>개</span>
+      <button class="refresh" onclick="loadPrayers()">새로고침</button>
+    </div>
+    <div id="plist"></div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -84,17 +111,25 @@ const CH=[
 ];
 const sb=supabase.createClient(SUPA_URL,SUPA_KEY);
 const $=id=>document.getElementById(id);
+const esc=s=>(s==null?"":String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])));
+const timeAgo=iso=>{const s=(Date.now()-new Date(iso))/1000;if(s<60)return"방금";if(s<3600)return Math.floor(s/60)+"분 전";if(s<86400)return Math.floor(s/3600)+"시간 전";return Math.floor(s/86400)+"일 전";};
 let PW="";
 
 async function apiVerify(token){
  const r=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({verify:true,token})});
  return r.ok;
 }
-async function apiDelete(id,token){
- const r=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,token})});
+async function apiDelete(id,token,type){
+ const r=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id,token,type:type||"photo"})});
  const j=await r.json().catch(()=>({}));
  if(!r.ok)throw new Error(j.error||("삭제 실패("+r.status+")"));
  return j;
+}
+function setTab(t){
+ $("tab-photos").classList.toggle("on",t==="photos");
+ $("tab-prayers").classList.toggle("on",t==="prayers");
+ $("view-photos").classList.toggle("hidden",t!=="photos");
+ $("view-prayers").classList.toggle("hidden",t!=="prayers");
 }
 
 async function unlock(){
@@ -109,6 +144,7 @@ async function unlock(){
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
   await load();
+  loadPrayers();
  }catch(e){$("gate-err").textContent="연결 문제가 생겼어요. 다시 시도해주세요";}
  finally{btn.disabled=false;btn.textContent="확인";}
 }
@@ -127,11 +163,11 @@ async function load(){
    arr.map(p=>{
     const url=sb.storage.from(BUCKET).getPublicUrl(p.storage_path).data.publicUrl;
     const d=new Date(p.created_at);
-    const cap=p.caption?` · ${p.caption}`:"";
+    const cap=p.caption?` · ${esc(p.caption)}`:"";
     return `<div class="cell">
       <button class="del" title="삭제" onclick="del('${p.id}')">×</button>
       <div class="img" style="background-image:url(${url})"></div>
-      <div class="meta"><p class="m-t">${p.ministry_type}</p><p class="m-s">${d.getMonth()+1}. ${d.getDate()}${cap}</p></div>
+      <div class="meta"><p class="m-t">${esc(p.ministry_type)}</p><p class="m-s">${d.getMonth()+1}. ${d.getDate()}${cap}</p></div>
     </div>`;
    }).join("")+`</div></div>`;
  });
@@ -140,7 +176,26 @@ async function load(){
 
 async function del(id){
  if(!confirm("이 사진을 삭제할까요? 되돌릴 수 없어요."))return;
- try{await apiDelete(id,PW);await load();}
+ try{await apiDelete(id,PW,"photo");await load();}
+ catch(e){alert("삭제 중 문제가 생겼어요: "+e.message);}
+}
+
+async function loadPrayers(){
+ const{data,error}=await sb.from("prayers").select("id,name,content,created_at").order("created_at",{ascending:false});
+ if(error){$("plist").innerHTML=`<p class="empty">목록을 불러오지 못했어요.</p>`;return}
+ $("ptotal").textContent=data.length;
+ if(!data.length){$("plist").innerHTML=`<p class="empty">아직 나눈 기도제목이 없습니다.</p>`;return}
+ $("plist").innerHTML=`<div class="plist">`+data.map(p=>`<div class="pcard">
+   <button class="del" title="삭제" onclick="delPrayer('${p.id}')">×</button>
+   <p class="pn">${esc(p.name||"익명")}</p>
+   <p class="pv">${timeAgo(p.created_at)}</p>
+   <p class="pb">${esc(p.content)}</p>
+ </div>`).join("")+`</div>`;
+}
+
+async function delPrayer(id){
+ if(!confirm("이 기도제목을 삭제할까요? 되돌릴 수 없어요."))return;
+ try{await apiDelete(id,PW,"prayer");await loadPrayers();}
  catch(e){alert("삭제 중 문제가 생겼어요: "+e.message);}
 }
 </script>

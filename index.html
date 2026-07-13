@@ -298,6 +298,22 @@ input{font-family:inherit;outline:none}
 .al-img svg{width:22px;height:22px;color:rgba(255,255,255,.8)}
 .al-t{font-size:12.5px;font-weight:500;margin-top:9px}
 .al-s{font-size:11.5px;color:var(--tx3);margin-top:1px}
+/* 사역별 필터 칩 */
+.mi-filter{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.mi-filter:empty{display:none}
+.fchip{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--tx2);font-size:12.5px;font-weight:600;transition:.15s}
+.fchip:hover{border-color:var(--sky)}
+.fchip.on{background:var(--tx);border-color:var(--tx);color:#fff}
+.fchip span{font-size:11px;opacity:.6;font-variant-numeric:tabular-nums}
+.fchip.on span{opacity:.75}
+/* 교회 메모 */
+.memo-list{display:flex;flex-direction:column;gap:10px}
+.memo{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:var(--sh)}
+.memo-h{display:flex;align-items:baseline;gap:8px;margin-bottom:7px}
+.memo-n{font-size:13px;font-weight:700;letter-spacing:-.02em}
+.memo-v{font-size:11px;color:var(--tx3)}
+.memo-b{font-size:13.5px;color:var(--tx2);line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.memo .del-x{width:27px;height:27px;line-height:27px;font-size:16px;top:10px;right:10px}
 
 .btn-p{display:flex;align-items:center;gap:6px;padding:0 16px;height:40px;border-radius:999px;
   background:var(--sky-d);color:#fff;font-size:13px;font-weight:500;transition:.15s;white-space:nowrap;flex-shrink:0}
@@ -322,6 +338,10 @@ input{font-family:inherit;outline:none}
 .drop:hover{background:#F4F8FA;border-color:var(--sky)}
 .drop svg{width:20px;height:20px;color:#C6D1DB}
 .drop p{font-size:13px;color:var(--tx3)}
+.pick-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.pick-btn{display:flex;align-items:center;justify-content:center;gap:7px;height:44px;border-radius:12px;background:var(--sky-l);color:var(--sky-d);font-size:13px;font-weight:600;transition:.15s}
+.pick-btn:hover{background:#D3EAF6}
+.pick-btn svg{width:16px;height:16px}
 .lb{font-size:13px;font-weight:500;margin:22px 0 10px;display:block}
 .req{color:var(--cor-d)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -584,7 +604,7 @@ input{font-family:inherit;outline:none}
       <h1 class="pg-t" id="ch-name"></h1>
     </div>
 
-    <section class="sec">
+    <section class="sec" id="ch-sched-sec">
       <div class="sec-h"><h2 class="sec-t">사역 스케줄</h2></div>
       <div class="card divide" id="ch-sched"></div>
       <div id="ch-tt"></div>
@@ -597,7 +617,18 @@ input{font-family:inherit;outline:none}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>사진 올리기
         </button>
       </div>
+      <div class="mi-filter" id="ch-mi-filter"></div>
       <div class="grid g4" id="ch-album"></div>
+    </section>
+
+    <section class="sec">
+      <div class="sec-h">
+        <div><h2 class="sec-t">교회 메모</h2><p class="sec-s">이 교회에 남기는 기록·메모입니다</p></div>
+        <button class="btn-p pray" onclick="openMemo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>메모 남기기
+        </button>
+      </div>
+      <div id="ch-memos"></div>
     </section>
   </div>
 </div>
@@ -693,6 +724,17 @@ input{font-family:inherit;outline:none}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
         <p id="m-drop-t">사진을 끌어다 놓거나 클릭하세요 (여러 장 가능)</p>
         <input type="file" id="m-file" accept="image/*" multiple style="display:none" onchange="onPick(event)">
+        <input type="file" id="m-cam" accept="image/*" capture="environment" style="display:none" onchange="onPick(event)">
+      </div>
+      <div class="pick-row">
+        <button class="pick-btn" onclick="$('m-file').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          앨범에서 선택
+        </button>
+        <button class="pick-btn" onclick="$('m-cam').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          카메라로 찍기
+        </button>
       </div>
       <label class="lb">교회 선택 <span class="req">*</span></label>
       <div class="chips" id="m-ch"></div>
@@ -724,6 +766,26 @@ input{font-family:inherit;outline:none}
     <div class="m-f">
       <button class="btn-gray" onclick="closePray()">취소</button>
       <button class="btn-blue" id="p-submit" onclick="doPray()">나누기</button>
+    </div>
+  </div>
+</div>
+
+<div class="mask" id="memomask" onclick="if(event.target===this)closeMemo()">
+  <div class="modal">
+    <div class="m-h">
+      <span class="m-t"><span id="memo-ch-name">교회</span> 메모 남기기</span>
+      <button class="m-x" onclick="closeMemo()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="m-b">
+      <label class="lb">작성자 <span class="opt">(선택)</span></label>
+      <input class="inp" id="memo-name" placeholder="예) 이미용팀 · 김집사" maxlength="40">
+      <label class="lb">메모 <span class="req">*</span></label>
+      <textarea class="inp ta" id="memo-content" rows="4" placeholder="현장에서 공유할 내용을 남겨주세요. (예: 다음 팀 인계사항, 어르신 특이사항)" maxlength="500"></textarea>
+      <p class="note">이 메모는 해당 교회 페이지에 함께 기록됩니다.</p>
+    </div>
+    <div class="m-f">
+      <button class="btn-gray" onclick="closeMemo()">취소</button>
+      <button class="btn-blue" id="memo-submit" onclick="doMemo()">남기기</button>
     </div>
   </div>
 </div>
@@ -994,6 +1056,41 @@ async function delMinePrayer(id){
  catch(e){alert("삭제 중 문제가 생겼어요: "+e.message)}
 }
 
+/* 교회 메모 — Supabase에 저장, 이 기기에서 남긴 것만 삭제 가능 */
+const MYMEMO_KEY="soando_my_memos";
+function myMemos(){try{return JSON.parse(localStorage.getItem(MYMEMO_KEY)||"[]")}catch(e){return[]}}
+function addMyMemo(id){const a=myMemos();a.push(id);localStorage.setItem(MYMEMO_KEY,JSON.stringify(a));}
+function removeMyMemo(id){localStorage.setItem(MYMEMO_KEY,JSON.stringify(myMemos().filter(x=>x!==id)));}
+function isMineMemo(id){return myMemos().includes(id);}
+const memoCard=m=>`<div class="memo">${isMineMemo(m.id)?`<button class="del-x" title="삭제" onclick="delMineMemo('${m.id}')">×</button>`:""}
+  <div class="memo-h"><span class="memo-n">${esc(m.name||"익명")}</span><span class="memo-v">${timeAgo(m.created_at)}</span></div>
+  <p class="memo-b">${esc(m.content)}</p></div>`;
+async function loadMemos(churchId){
+ const{data,error}=await sb.from("memos").select("id,name,content,created_at,church_id").eq("church_id",churchId).order("created_at",{ascending:false});
+ if(error){console.error(error);return}
+ const list=data||[];
+ $("ch-memos").innerHTML=list.length?`<div class="memo-list">${list.map(memoCard).join("")}</div>`
+   :`<p class="note">아직 남긴 메모가 없어요. 첫 메모를 남겨보세요.</p>`;
+}
+function openMemo(){$("memo-ch-name").textContent=CH[cur].n;$("memo-name").value="";$("memo-content").value="";$("memomask").classList.add("on");}
+function closeMemo(){$("memomask").classList.remove("on");}
+async function doMemo(){
+ const name=$("memo-name").value.trim(), content=$("memo-content").value.trim();
+ if(!content){alert("메모 내용을 입력해주세요");return}
+ const btn=$("memo-submit");btn.disabled=true;btn.textContent="남기는 중...";
+ try{
+  const{data:ins,error}=await sb.from("memos").insert({church_id:CH[cur].id,name:name||null,content,owner_token:OWNER_TOKEN}).select("id").single();
+  if(error)throw error;
+  addMyMemo(ins.id); closeMemo(); await loadMemos(CH[cur].id);
+ }catch(e){alert("메모 등록 중 문제가 생겼어요: "+(e.message||e))}
+ finally{btn.disabled=false;btn.textContent="남기기"}
+}
+async function delMineMemo(id){
+ if(!confirm("이 메모를 삭제할까요?"))return;
+ try{await callDelete(id,OWNER_TOKEN,"memo");removeMyMemo(id);await loadMemos(CH[cur].id);}
+ catch(e){alert("삭제 중 문제가 생겼어요: "+e.message)}
+}
+
 $("m-mi").innerHTML=MI.map(m=>`<button class="chip" data-v="${m}" onclick="pick(this,'m-mi')">${m}</button>`).join("");
 
 /* ---------- NAV ---------- */
@@ -1012,18 +1109,42 @@ function openCh(i){cur=i;const c=CH[i];
    ${rows.map(([w,t])=>`<div class="tm-r"><span>${t}</span><span class="tm-w">${w}</span></div>`).join("")}
  </div>`:"";
  const hasTT=!!CHTT[c.id];
- $("ch-sched").innerHTML=coop+(hasTT?"":schedHTML);
- $("ch-sched").style.display=(coop||!hasTT)?"block":"none";
- const T=CHTT[c.id];
- $("ch-tt").innerHTML=T?ttHTML(T):"";
+ // 소안동부교회(개별 시간표 보유)만 스케줄 표시, 나머지는 스케줄 섹션을 비운다
+ if(hasTT){
+  $("ch-sched-sec").style.display="block";
+  $("ch-sched").innerHTML=coop; $("ch-sched").style.display=coop?"block":"none";
+  $("ch-tt").innerHTML=ttHTML(CHTT[c.id]);
+ }else{
+  $("ch-sched-sec").style.display="none";
+  $("ch-sched").innerHTML=""; $("ch-tt").innerHTML="";
+ }
  $("ch-bandtx").textContent=`${c.n} · 전남 완도군 소안도`;
  renderAlbum(c.id);
+ loadMemos(c.id);
  go("church")}
+
+let albumPhotos=[], albumFilter="전체";
 async function renderAlbum(churchId){
  const{data,error}=await sb.from("photos").select(PHOTO_COLS).eq("church_id",churchId).order("created_at",{ascending:false});
  if(error){console.error(error);return}
- const cnt=$("ch-album-cnt");if(cnt)cnt.textContent=`${data.length}장`;
- $("ch-album").innerHTML=data.length?data.map(p=>{
+ albumPhotos=data||[]; albumFilter="전체";
+ drawAlbumFilter(); drawAlbum();
+}
+function drawAlbumFilter(){
+ const el=$("ch-mi-filter"); if(!el) return;
+ if(!albumPhotos.length){el.innerHTML="";return;}
+ const mins=[...new Set(albumPhotos.map(p=>p.ministry_type))];
+ const chips=["전체",...mins];
+ el.innerHTML=chips.map(m=>{
+  const n=m==="전체"?albumPhotos.length:albumPhotos.filter(p=>p.ministry_type===m).length;
+  return `<button class="fchip ${m===albumFilter?'on':''}" onclick="setAlbumFilter('${m}')">${m}<span>${n}</span></button>`;
+ }).join("");
+}
+function setAlbumFilter(m){albumFilter=m;drawAlbumFilter();drawAlbum();}
+function drawAlbum(){
+ const list=albumFilter==="전체"?albumPhotos:albumPhotos.filter(p=>p.ministry_type===albumFilter);
+ const cnt=$("ch-album-cnt");if(cnt)cnt.textContent=`${list.length}장${albumFilter!=="전체"?" · "+albumFilter:""}`;
+ $("ch-album").innerHTML=list.length?list.map(p=>{
   const url=sb.storage.from(PHOTO_BUCKET).getPublicUrl(p.storage_path).data.publicUrl;
   const d=new Date(p.created_at);
   return `<div class="al">${isMine(p.id)?DEL_BTN(p.id):""}<div class="al-img" style="background-image:url(${url})"></div>
@@ -1041,6 +1162,20 @@ function onPick(e){
  picked=Array.from(e.target.files||[]);
  $("m-drop-t").textContent=picked.length?`${picked.length}장 선택됨 · ${picked.map(f=>f.name).join(", ")}`:"사진을 끌어다 놓거나 클릭하세요 (여러 장 가능)";
 }
+/* 업로드 전 리사이징 — 긴 변 1600px, JPEG 품질 82%로 줄여 용량 절약(장당 보통 200~400KB).
+   HEIC 등 브라우저가 못 여는 형식이면 원본 그대로 업로드 */
+async function resizeImage(file){
+ if(!file.type||!file.type.startsWith("image/")) return {blob:file,ext:(file.name.split(".").pop()||"jpg")};
+ let bmp;
+ try{ bmp=await createImageBitmap(file); }catch(e){ return {blob:file,ext:(file.name.split(".").pop()||"jpg")}; }
+ const MAX=1600, scale=Math.min(1,MAX/Math.max(bmp.width,bmp.height));
+ const w=Math.max(1,Math.round(bmp.width*scale)), h=Math.max(1,Math.round(bmp.height*scale));
+ const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+ canvas.getContext("2d").drawImage(bmp,0,0,w,h);
+ if(bmp.close)bmp.close();
+ const blob=await new Promise(res=>canvas.toBlob(res,"image/jpeg",0.82));
+ return blob?{blob,ext:"jpg"}:{blob:file,ext:(file.name.split(".").pop()||"jpg")};
+}
 async function doUpload(){
  const chEl=$("m-ch").querySelector(".chip.on");
  const miEl=$("m-mi").querySelector(".chip.on");
@@ -1050,12 +1185,15 @@ async function doUpload(){
  const churchId=CH[+chEl.dataset.i].id;
  const ministry=miEl.dataset.v;
  const caption=$("m-cap").value.trim();
- const btn=$("m-submit");btn.disabled=true;btn.textContent="업로드 중...";
+ const btn=$("m-submit");btn.disabled=true;
  try{
+  let n=0;
   for(const file of picked){
-   const ext=(file.name.split(".").pop()||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
+   n++;btn.textContent=picked.length>1?`업로드 중... (${n}/${picked.length})`:"업로드 중...";
+   const {blob,ext:rawExt}=await resizeImage(file);
+   const ext=(rawExt||"jpg").toLowerCase().replace(/[^a-z0-9]/g,"")||"jpg";
    const path=`${churchId}/${Date.now()}_${Math.random().toString(36).slice(2,8)}.${ext}`;
-   const{error:upErr}=await sb.storage.from(PHOTO_BUCKET).upload(path,file,{contentType:file.type||"image/jpeg"});
+   const{error:upErr}=await sb.storage.from(PHOTO_BUCKET).upload(path,blob,{contentType:blob.type||"image/jpeg"});
    if(upErr)throw upErr;
    const{data:ins,error:insErr}=await sb.from("photos").insert({church_id:churchId,ministry_type:ministry,caption,storage_path:path,owner_token:OWNER_TOKEN}).select("id").single();
    if(insErr)throw insErr;
