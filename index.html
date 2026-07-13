@@ -65,7 +65,7 @@ input{font-family:inherit;outline:none}
 
 .ov-kick{font-size:10.5px;letter-spacing:.36em;font-weight:600;color:var(--sky-d);padding-left:.36em}
 .ov-t{font-size:28px;font-weight:700;letter-spacing:-.04em;margin-top:10px;line-height:1.35;white-space:nowrap}
-.ov-d{font-size:14px;color:var(--tx2);margin-top:10px;line-height:1.7}
+.ov-d{font-size:15px;color:var(--tx2);margin-top:10px;line-height:1.7}
 .ov-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
 .mt{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;
   background:#fff;border:1px solid var(--line);font-size:12.5px;font-weight:500;color:var(--tx2);
@@ -158,9 +158,12 @@ input{font-family:inherit;outline:none}
 .cp-i{width:100%;aspect-ratio:4/3;background-size:cover;background-position:center;
   border-bottom:1px solid var(--line2)}
 .cp-b{padding:12px 13px 13px}
-.cp-n{font-size:13px;font-weight:700;letter-spacing:-.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-n{font-size:14.5px;font-weight:700;letter-spacing:-.025em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cp-s{font-size:11.5px;color:var(--tx3);margin-top:3px;display:flex;align-items:center;gap:2px}
 .cp-s svg{width:12px;height:12px}
+.cp-stats{display:flex;justify-content:flex-end;gap:10px;margin-top:7px}
+.cp-st{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--sea-d);font-variant-numeric:tabular-nums}
+.cp-st svg{width:14px;height:14px;color:var(--tx3)}
 
 .map-open{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px 20px;
   border-radius:20px;border:1px solid var(--line);box-shadow:var(--sh);transition:.18s;
@@ -182,7 +185,7 @@ input{font-family:inherit;outline:none}
 .sec-h{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:18px;gap:10px 12px;flex-wrap:wrap}
 .sec-h>div:first-child{flex:1 1 150px}
 .sec-t{font-size:19px;font-weight:700;letter-spacing:-.03em}
-.sec-s{font-size:13px;color:var(--tx3);margin-top:3px;font-weight:400}
+.sec-s{font-size:13.5px;color:var(--tx3);margin-top:3px;font-weight:400}
 
 /* ---- card ---- */
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r2);box-shadow:var(--sh)}
@@ -229,13 +232,13 @@ input{font-family:inherit;outline:none}
   backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);
   transform:translateY(0);opacity:1;transition:transform .28s cubic-bezier(.22,.61,.36,1),opacity .24s ease;pointer-events:none}
 .cap-ov span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  font-size:11.5px;font-weight:600;line-height:1.35;color:var(--tx);letter-spacing:-.01em;word-break:keep-all}
+  font-size:12.5px;font-weight:600;line-height:1.38;color:var(--tx);letter-spacing:-.01em;word-break:keep-all}
 @media (min-width:861px){
   .cap-ov{transform:translateY(101%);opacity:0}
   .ph:hover .cap-ov,.al:hover .cap-ov{transform:translateY(0);opacity:1}
 }
-.ph-t{font-size:13px;font-weight:500;margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ph-s{font-size:12px;color:var(--tx3);margin-top:1px}
+.ph-t{font-size:13.5px;font-weight:600;margin-top:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ph-s{font-size:12.5px;color:var(--tx3);margin-top:1px}
 .t0{background:linear-gradient(135deg,#2AA9E1,#8BC9EE)}
 .t1{background:linear-gradient(135deg,#1490B5,#6FC4DA)}
 .t2{background:linear-gradient(135deg,#2D6473,#6C9AA6)}
@@ -251,18 +254,18 @@ input{font-family:inherit;outline:none}
 .pr .pr-cnr .del-x{position:static;width:24px;height:24px;line-height:24px;font-size:14px;box-shadow:none}
 .av{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;border:1.5px solid #fff;background-size:cover;background-position:center;box-shadow:0 1px 4px rgba(20,30,45,.10)}
 .av svg{width:17px;height:17px;color:rgba(255,255,255,.9)}
-.pr-n{font-size:13.5px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pr-v{font-size:11.5px;color:var(--tx3);margin-top:2px}
+.pr-n{font-size:15px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-v{font-size:12.5px;color:var(--tx3);margin-top:2px}
 /* 통일 페이저 (기도제목·앨범·메모 공통) */
 .pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px}
 .pager .pgbtn{display:inline-flex;align-items:center;gap:4px;height:40px;padding:0 18px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--tx2);font-size:13px;font-weight:600;transition:.15s}
 .pager .pgbtn:hover:not(:disabled){border-color:var(--sky);color:var(--tx)}
 .pager .pgbtn:disabled{opacity:.4;cursor:default}
 .pager .pgnum{font-size:13px;font-weight:700;color:var(--tx2);font-variant-numeric:tabular-nums;min-width:54px;text-align:center}
-.pr-b{font-size:13px;color:var(--tx2);line-height:1.66;flex:1;
-  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-.pr-btn{margin-top:16px;width:100%;height:38px;border-radius:12px;background:var(--cor-l);color:var(--cor-d);
-  font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
+.pr-b{font-size:15px;color:var(--tx2);line-height:1.66;flex:1;
+  display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.pr-btn{margin-top:16px;width:100%;height:42px;border-radius:12px;background:var(--cor-l);color:var(--cor-d);
+  font-size:14.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;transition:.15s}
 .pr-btn:hover{background:#F8DCD7}
 .pr-btn svg{width:14px;height:14px}
 .pr-btn.on{background:var(--cor-d);color:#fff}
@@ -275,7 +278,7 @@ input{font-family:inherit;outline:none}
 @keyframes pop{0%{transform:scale(1)}42%{transform:scale(1.3)}100%{transform:scale(1)}}
 .pr-btn.pop svg{animation:pop .34s ease}
 .pr-sum{display:flex;align-items:center;gap:7px;margin-bottom:14px;padding:11px 15px;border-radius:14px;
-  background:var(--cor-l);border:1px solid #F5D9D3;color:var(--cor-d);font-size:13px;font-weight:500;word-break:keep-all;line-height:1.6}
+  background:var(--cor-l);border:1px solid #F5D9D3;color:var(--cor-d);font-size:14px;font-weight:500;word-break:keep-all;line-height:1.6}
 .pr-sum svg{width:15px;height:15px;fill:var(--cor-d);stroke:var(--cor-d);flex-shrink:0}
 .pr-sum b{font-weight:700;font-variant-numeric:tabular-nums}
 
@@ -325,8 +328,8 @@ input{font-family:inherit;outline:none}
 .del-x{position:absolute;top:7px;right:7px;z-index:3;width:31px;height:31px;padding:0;border:none;border-radius:50%;background:rgba(20,28,38,.62);color:#fff;font-size:18px;line-height:31px;text-align:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .del-x:hover{background:rgba(214,52,52,.92)}
 .al-img svg{width:22px;height:22px;color:rgba(255,255,255,.8)}
-.al-t{font-size:12.5px;font-weight:500;margin-top:9px}
-.al-s{font-size:11.5px;color:var(--tx3);margin-top:1px}
+.al-t{font-size:13.5px;font-weight:600;margin-top:9px}
+.al-s{font-size:12.5px;color:var(--tx3);margin-top:1px}
 /* 사역별 필터 칩 */
 .mi-filter{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
 .mi-filter:empty{display:none}
@@ -339,9 +342,9 @@ input{font-family:inherit;outline:none}
 .memo-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
 .memo{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--sh);display:flex;flex-direction:column}
 .memo-h{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;padding-right:22px}
-.memo-n{font-size:13px;font-weight:700;letter-spacing:-.02em}
-.memo-v{font-size:11px;color:var(--tx3)}
-.memo-b{font-size:13.5px;color:var(--tx2);line-height:1.6;white-space:pre-wrap;word-break:break-word;
+.memo-n{font-size:14.5px;font-weight:700;letter-spacing:-.02em}
+.memo-v{font-size:12px;color:var(--tx3)}
+.memo-b{font-size:15px;color:var(--tx2);line-height:1.62;white-space:pre-wrap;word-break:break-word;
   display:-webkit-box;-webkit-line-clamp:8;-webkit-box-orient:vertical;overflow:hidden}
 .memo .del-x{width:27px;height:27px;line-height:27px;font-size:16px;top:10px;right:10px}
 
@@ -403,7 +406,7 @@ input{font-family:inherit;outline:none}
 .ub-nvy{background:var(--nvy-d);color:#fff}.ub-nvy:hover{background:#1C3E68}
 .prev{margin-top:20px;padding:16px;border-radius:18px;background:#FAFBFC;border:1px solid var(--line2)}
 .prev-k{font-size:12px;color:var(--tx3);margin-bottom:12px}
-.note{font-size:11.5px;color:var(--tx3);margin-top:12px;line-height:1.6}
+.note{font-size:12.5px;color:var(--tx3);margin-top:12px;line-height:1.6}
 .badge{display:inline-flex;align-items:center;gap:4px;padding:0 9px;height:24px;border-radius:999px;
   background:#F1F4F7;color:var(--tx2);font-size:11.5px;font-weight:500}
 .badge svg{width:12px;height:12px}
@@ -622,7 +625,7 @@ input{font-family:inherit;outline:none}
       </div>
       <div class="pr-sum">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-        총 <b id="pr-total">0</b>개의 기도제목, <b id="pr-praytotal">0</b>번의 기도
+        총 <b id="pr-total">0</b>개의 기도제목 · <b id="pr-praytotal">0</b>번의 기도
       </div>
       <div class="grid g5" id="prayers"></div>
       <div id="pr-pager"></div>
@@ -1010,10 +1013,29 @@ const schedHTML=SC.map(x=>`<div class="day">
 </div>`).join("");
 $("ch-sched").innerHTML=schedHTML;
 
-$("cplist").innerHTML=CH.map((c,i)=>`<button class="cp" onclick="openCh(${i})">
+let churchStats={};
+function renderCplist(){
+ $("cplist").innerHTML=CH.map((c,i)=>{
+  const st=churchStats[c.id]||{photo_count:0,memo_count:0};
+  return `<button class="cp" onclick="openCh(${i})">
   <div class="cp-i" style="background-image:url(${CPIC[c.id]})"></div>
-  <div class="cp-b"><p class="cp-n">${c.n}</p><p class="cp-s">사역 일정 · 앨범 ${ARR}</p></div>
-</button>`).join("");
+  <div class="cp-b">
+    <p class="cp-n">${c.n}</p>
+    <div class="cp-stats">
+      <span class="cp-st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>${st.photo_count}</span>
+      <span class="cp-st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>${st.memo_count}</span>
+    </div>
+  </div>
+</button>`;}).join("");
+}
+renderCplist();
+async function loadChurchStats(){
+ const{data,error}=await sb.rpc("church_counts");
+ if(error){console.error(error);return}
+ churchStats={}; (data||[]).forEach(r=>churchStats[r.church_id]={photo_count:r.photo_count,memo_count:r.memo_count});
+ renderCplist();
+}
+loadChurchStats();
 $("teams").innerHTML=TEAMS.map(x=>{
   const cat=x.c==="tm-a"?"a":x.c==="tm-b"?"b":"c";
   return `<div class="tmc">
