@@ -432,6 +432,13 @@ input{font-family:inherit;outline:none}
 .actionbar .ab-photo:hover{background:#1276ab}
 .actionbar .ab-pray{background:var(--cor);color:#fff}
 .actionbar .ab-pray:hover{background:var(--cor-d)}
+/* PC(마우스)에선 하단 고정 바 대신 섹션 제목 옆 버튼을 쓴다 */
+.hdr-action{display:none}
+@media(min-width:861px){
+  .actionbar.on{display:none}
+  .pb64{padding-bottom:60px}
+  .hdr-action{display:inline-flex}
+}
 .pt44{padding-top:44px}
 
 @media(max-width:1000px){
@@ -580,6 +587,9 @@ input{font-family:inherit;outline:none}
           <h2 class="sec-t">사역 현장</h2>
           <p class="sec-s">최신 20개 · 전체는 교회별 앨범에서 확인하세요</p>
         </div>
+        <button class="btn-p hdr-action" onclick="openM()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>사진 올리기
+        </button>
       </div>
       <div class="marquee" id="photos"></div>
     </section>
@@ -591,6 +601,9 @@ input{font-family:inherit;outline:none}
           <h2 class="sec-t">섬마을 사람들</h2>
           <p class="sec-s">이웃들의 기도제목을 함께 나눕니다</p>
         </div>
+        <button class="btn-p pray hdr-action" onclick="openPray()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>기도제목 나누기
+        </button>
       </div>
       <div class="pr-sum">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
@@ -650,6 +663,9 @@ input{font-family:inherit;outline:none}
     <section class="sec">
       <div class="sec-h">
         <div><h2 class="sec-t">사역 앨범</h2><p class="sec-s" id="ch-album-cnt">0장</p></div>
+        <button class="btn-p hdr-action" onclick="openM()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>사진 올리기
+        </button>
       </div>
       <div class="mi-filter" id="ch-mi-filter"></div>
       <div class="grid g4" id="ch-album"></div>
@@ -659,6 +675,9 @@ input{font-family:inherit;outline:none}
     <section class="sec">
       <div class="sec-h">
         <div><h2 class="sec-t">선교 소감·감사</h2><p class="sec-s">이곳에서 느낀 점, 감사한 순간, 짧은 기도를 자유롭게 나눠보세요</p></div>
+        <button class="btn-p pray hdr-action" onclick="openMemo()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>소감 남기기
+        </button>
       </div>
       <div id="ch-memos"></div>
       <div id="ch-memo-pager"></div>
