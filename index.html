@@ -233,7 +233,11 @@ input{font-family:inherit;outline:none}
 
 /* prayer */
 .pr{padding:18px;display:flex;flex-direction:column}
-.pr-h{margin-bottom:11px}
+.pr-h{margin-bottom:11px;padding-right:52px}
+.pr-cnr{position:absolute;top:12px;right:12px;display:flex;align-items:center;gap:6px}
+.pr-cnt{display:inline-flex;align-items:center;gap:3px;height:24px;padding:0 9px 0 7px;border-radius:999px;background:var(--cor-l);color:var(--cor-d);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.pr-cnt svg{width:12px;height:12px;fill:var(--cor-d);stroke:var(--cor-d)}
+.pr .pr-cnr .del-x{position:static;width:24px;height:24px;line-height:24px;font-size:14px;box-shadow:none}
 .av{width:46px;height:46px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;border:1.5px solid #fff;background-size:cover;background-position:center;box-shadow:0 1px 4px rgba(20,30,45,.10)}
 .av svg{width:17px;height:17px;color:rgba(255,255,255,.9)}
 .pr-n{font-size:13.5px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -607,7 +611,7 @@ input{font-family:inherit;outline:none}
       </div>
       <div class="pr-sum">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1L12 21.2l7.7-7.8 1.1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
-        지금까지 <b id="pr-total">0</b>개의 기도제목을 함께 나눴습니다
+        총 <b id="pr-total">0</b>개의 기도제목을 나눴고, <b id="pr-praytotal">0</b>번의 기도를 함께 했습니다
       </div>
       <div class="grid g5" id="prayers"></div>
       <div id="pr-pager"></div>
@@ -1118,19 +1122,33 @@ function pagerHTML(page,total,fn){
 
 let PRAYERS=[]; const PR_PAGE=5; let prPageIdx=0;
 const prCard=p=>{
- const mine=isMinePrayer(p.id), prayed=!!PRAYED[p.id];
+ const mine=isMinePrayer(p.id), prayed=!!PRAYED[p.id], n=p.pray_count||0;
  return `<div class="card pr">
-  ${mine?`<button class="del-x" title="삭제" onclick="delMinePrayer('${p.id}')">×</button>`:""}
+  <div class="pr-cnr">
+   <span class="pr-cnt" title="${n}명이 함께 기도했어요">${HRT}<b>${n}</b></span>
+   ${mine?`<button class="del-x" title="삭제" onclick="delMinePrayer('${p.id}')">×</button>`:""}
+  </div>
   <div class="pr-h"><p class="pr-n">${esc(p.name||"익명")}</p><p class="pr-v">${timeAgo(p.created_at)}</p></div>
   <p class="pr-b">${esc(p.content)}</p>
   <button class="pr-btn ${prayed?"on":""}" onclick="togglePray('${p.id}',this)">${HRT} ${prayed?"기도했어요":"함께 기도하기"}</button>
  </div>`;
 };
+function updatePrTotal(){
+ const t=PRAYERS.reduce((a,p)=>a+(p.pray_count||0),0);
+ const el=$("pr-praytotal"); if(el)el.textContent=t.toLocaleString("ko-KR");
+}
 function togglePray(id,btn){
- PRAYED[id]=!PRAYED[id]; savePrayed();
- btn.classList.toggle("on",!!PRAYED[id]);
- btn.innerHTML=`${HRT} ${PRAYED[id]?"기도했어요":"함께 기도하기"}`;
- if(PRAYED[id]){btn.classList.remove("pop");void btn.offsetWidth;btn.classList.add("pop")}
+ const on=!PRAYED[id];
+ PRAYED[id]=on; savePrayed();
+ const p=PRAYERS.find(x=>x.id===id);
+ if(p)p.pray_count=Math.max(0,(p.pray_count||0)+(on?1:-1));
+ btn.classList.toggle("on",on);
+ btn.innerHTML=`${HRT} ${on?"기도했어요":"함께 기도하기"}`;
+ if(on){btn.classList.remove("pop");void btn.offsetWidth;btn.classList.add("pop")}
+ const card=btn.closest(".card"), badge=card&&card.querySelector(".pr-cnt b");
+ if(badge&&p)badge.textContent=p.pray_count;
+ updatePrTotal();
+ sb.rpc("bump_prayer",{pid:id,delta:on?1:-1}).then(({error})=>{if(error)console.error(error);});
 }
 function drawPR(){
  const total=Math.max(1,Math.ceil(PRAYERS.length/PR_PAGE));
@@ -1140,10 +1158,11 @@ function drawPR(){
    :`<p class="note">아직 나눈 기도제목이 없어요. 첫 기도제목을 나눠보세요.</p>`;
  $("pr-pager").innerHTML=pagerHTML(prPageIdx,PRAYERS.length?total:1,"prPage");
  $("pr-total").textContent=PRAYERS.length.toLocaleString("ko-KR");
+ updatePrTotal();
 }
 function prPage(d){const total=Math.max(1,Math.ceil(PRAYERS.length/PR_PAGE));prPageIdx=Math.min(total-1,Math.max(0,prPageIdx+d));drawPR();}
 async function loadPrayers(){
- const{data,error}=await sb.from("prayers").select("id,name,content,created_at").order("created_at",{ascending:false});
+ const{data,error}=await sb.from("prayers").select("id,name,content,created_at,pray_count").order("created_at",{ascending:false});
  if(error){console.error(error);return}
  PRAYERS=data||[]; prPageIdx=0; drawPR();
 }
