@@ -1113,12 +1113,12 @@ function ttHTML(T){
  });
 
  let h1=`<th class="hr" rowspan="2">시간</th>`, h2="";
- let colgroup=`<col style="width:44px">`;
+ let colgroup=`<col style="width:44px">`; let totalW=44;
  days.forEach(d=>{
-  if(d.roles.length<=1){ h1+=`<th rowspan="2">${d.label}</th>`; colgroup+=`<col style="width:72px">`; }
+  if(d.roles.length<=1){ h1+=`<th rowspan="2">${d.label}</th>`; colgroup+=`<col style="width:120px">`; totalW+=120; }
   else{
    h1+=`<th colspan="${d.roles.length}">${d.label}</th>`;
-   d.roles.forEach(role=>{ h2+=`<th class="tm-role">${role}</th>`; colgroup+=`<col style="width:72px">`; });
+   d.roles.forEach(role=>{ h2+=`<th class="tm-role">${role}</th>`; colgroup+=`<col style="width:72px">`; totalW+=72; });
   }
  });
 
@@ -1157,7 +1157,7 @@ function ttHTML(T){
   body+="</tr>";
  }
 
- return `<div class="tt-wrap"><table class="tt tt-matrix"><colgroup>${colgroup}</colgroup><thead><tr>${h1}</tr><tr>${h2}</tr></thead><tbody>${body}</tbody></table></div>
+ return `<div class="tt-wrap"><table class="tt tt-matrix" style="min-width:${totalW}px"><colgroup>${colgroup}</colgroup><thead><tr>${h1}</tr><tr>${h2}</tr></thead><tbody>${body}</tbody></table></div>
  <div class="tt-lg">
    <span><i style="background:var(--sky-l)"></i>식사</span>
    <span><i style="background:var(--nvy-l)"></i>모임 · 예배</span>
