@@ -119,6 +119,19 @@ input{font-family:inherit;outline:none}
 .tt-lg span{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--tx3)}
 .tt-lg i{width:11px;height:11px;border-radius:3px;border:1px solid var(--line);display:block}
 
+/* ---- 협력 사역 일정 매트릭스(원본 표 그대로: 교회 x 요일 x 오전/오후) ---- */
+.tg-wrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;overflow-x:auto;background:#fff;box-shadow:var(--sh);-webkit-overflow-scrolling:touch}
+.tg{border-collapse:collapse;width:100%;min-width:1180px;table-layout:fixed}
+.tg th,.tg td{border:1px solid var(--line2);padding:0;text-align:center;vertical-align:middle}
+.tg thead tr:nth-child(1) th{background:var(--nvy);color:#fff;font-size:12px;font-weight:700;padding:9px 4px;letter-spacing:-.02em;border-color:var(--nvy-d)}
+.tg thead tr:nth-child(2) th{background:var(--sea);color:#fff;font-size:11.5px;font-weight:700;padding:7px 2px;border-color:var(--sea-d)}
+.tg thead tr:nth-child(3) th{background:var(--sky-l);color:var(--tx2);font-size:10.5px;font-weight:700;padding:6px 2px;border-color:var(--line)}
+.tg thead .tg-corner{background:var(--isl-l)!important;color:var(--tx)!important;font-size:11.5px}
+.tg-cat{width:56px;background:#EDF2F5;color:var(--tx2);font-size:11px;font-weight:700;padding:5px 3px;line-height:1.35}
+.tg-sub{width:34px;background:#F6F9FB;color:var(--tx3);font-size:11px;font-weight:600;padding:4px 2px}
+.tg-cell{width:28px;height:36px;background:#fff}
+.tg-cell.on{background:var(--sea);box-shadow:inset 0 0 0 1px var(--sea-d)}
+
 /* ---- coop teams ---- */
 .tm{padding:18px 18px 16px}
 .tm-h{display:flex;align-items:center;gap:8px;margin-bottom:14px}
@@ -628,7 +641,7 @@ input{font-family:inherit;outline:none}
         <h2 class="sec-t">전체 협력 사역 일정</h2>
         <p class="sec-s">각 팀이 다섯 교회를 순회하며 사역합니다</p>
       </div></div>
-      <div class="scroll" id="teams"></div>
+      <div id="teams"></div>
     </section>
 
     <!-- 4. 교회 -->
@@ -926,6 +939,48 @@ const TEAMS=[
    ["소안동부교회","16(목) 오후"],["비자리교회","17(금) 오전"],["소안미라교회","17(금) 오후"],["소안중앙교회","18(토) 오전"]]},
 ];
 
+/* 전체 협력 사역 일정 — 원본 표(교회 x 요일 x 오전/오후 매트릭스) 그대로 구현 */
+const GANTT_CH=["소안동부교회","소안중앙교회","비자리교회","소안미라교회","부상안디옥교회"];
+const GANTT_DAYS=["16(목)","17(금)","18(토)"];
+const GANTT_ROWS=[
+ {cat:"의료팀", sub:"1팀", cells:{"소안중앙교회":{"16(목)":["오후"]},"비자리교회":{"17(금)":["오전","오후"]},"부상안디옥교회":{"18(토)":["오전"]}}},
+ {cat:"의료팀", sub:"2팀", cells:{"소안중앙교회":{"16(목)":["오후"]},"소안미라교회":{"17(금)":["오전","오후"]},"부상안디옥교회":{"18(토)":["오전"]}}},
+ {cat:"이미용팀·사진팀<br>(전도팀)", sub:"1팀", cells:{"부상안디옥교회":{"16(목)":["오후"]},"소안동부교회":{"17(금)":["오전","오후"]},"비자리교회":{"18(토)":["오전","오후"]}}},
+ {cat:"이미용팀·사진팀<br>(전도팀)", sub:"2팀", cells:{"부상안디옥교회":{"16(목)":["오후"]},"소안중앙교회":{"17(금)":["오전","오후"]},"소안미라교회":{"18(토)":["오전","오후"]}}},
+ {cat:"버스킹팀<br>(전도팀)", sub:null, cells:{"소안동부교회":{"16(목)":["오후"]},"비자리교회":{"17(금)":["오전"]},"소안미라교회":{"17(금)":["오후"]},"소안중앙교회":{"18(토)":["오전"]}}},
+];
+function ganttHTML(){
+ let head=`<thead><tr><th rowspan="3" class="tg-corner">구분</th><th class="tg-corner">교회명</th>`;
+ GANTT_CH.forEach(ch=>head+=`<th colspan="6">${ch}</th>`);
+ head+=`</tr><tr><th class="tg-corner">요일</th>`;
+ GANTT_CH.forEach(()=>GANTT_DAYS.forEach(d=>head+=`<th colspan="2">${d}</th>`));
+ head+=`</tr><tr><th class="tg-corner">시간</th>`;
+ GANTT_CH.forEach(()=>GANTT_DAYS.forEach(()=>head+=`<th>오전</th><th>오후</th>`));
+ head+=`</tr></thead>`;
+ let body="<tbody>", i=0;
+ while(i<GANTT_ROWS.length){
+  const cat=GANTT_ROWS[i].cat; let j=i; while(j<GANTT_ROWS.length&&GANTT_ROWS[j].cat===cat)j++;
+  const span=j-i;
+  for(let k=i;k<j;k++){
+   const row=GANTT_ROWS[k];
+   body+="<tr>";
+   if(k===i){
+    if(row.sub===null) body+=`<td class="tg-cat" colspan="2">${cat}</td>`;
+    else body+=`<td class="tg-cat" rowspan="${span}">${cat}</td><td class="tg-sub">${row.sub}</td>`;
+   } else body+=`<td class="tg-sub">${row.sub}</td>`;
+   GANTT_CH.forEach(ch=>GANTT_DAYS.forEach(day=>["오전","오후"].forEach(half=>{
+    const on=!!(row.cells[ch]&&row.cells[ch][day]&&row.cells[ch][day].includes(half));
+    body+=`<td class="tg-cell${on?" on":""}"></td>`;
+   })));
+   body+="</tr>";
+  }
+  i=j;
+ }
+ body+="</tbody>";
+ return `<div class="tg-wrap"><table class="tg">${head}${body}</table></div>
+ <p class="note" style="margin-top:10px">※ 각 교회 팀장·조장은 익일 활동 예정 장소와 시간을 파견 교회 팀장·조장께 사전에 꼭 확인해 주세요.</p>`;
+}
+
 /* 교회별 시간표 (제공된 일정표 기준) */
 const CHTT={
  east:{"hours": ["07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21"], "cols": ["16일 (목)", "17일 (금)", "18일 (토)", "19일 (주)"], "grid": [[[6, "emp", "", ""], [1, "meal", "점심 식사", ""], [1, "min", "도착 및 예배", ""], [2, "min", "사역 1", "전도·버스킹: 마을회관 · 전기: 예배당 · 벽화: 마을입구 · 도배·장판: 마을회관"], [2, "meal", "저녁 식사", "개인 정비"], [2, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [4, "min", "사역 2", "전도: 마을회관(이미용·사진) · 전기: 예배당 · 벽화: 마을입구 · 버스킹: with 비자리교회 · 도배·장판: 가정방문"], [1, "meal", "점심 식사", ""], [4, "min", "사역 3", "전도: 마을회관(이미용·사진) · 전기: 식당 · 벽화: 마을입구 · 버스킹: with 소안미라교회 · 도배·장판: 가정방문"], [2, "meal", "저녁 식사", "개인 정비"], [1, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [4, "min", "사역 4", "전도·전기: 가정방문 · 벽화: 마을입구 · 버스킹: with 소안중앙교회 · 도배·장판: 가정방문"], [1, "meal", "점심 식사", ""], [3, "min", "사역 5", "전도·전기: 가정방문 · 벽화: 마을입구 · 버스킹: with 소안중앙교회 · 도배·장판: 가정방문"], [2, "all", "전체 모임", ""], [2, "min", "나눔 & 기도회", ""], [1, "fre", "개인 시간", ""]], [[1, "meal", "기상 및 아침 식사", ""], [1, "wor", "아침 모임", ""], [1, "min", "정리", ""], [2, "wor", "주일 예배", ""], [1, "min", "정리 및 출발", "소안항"], [2, "meal", "점심 식사", ""], [6, "emp", "", ""], [1, "min", "교회 도착", ""]]]}
@@ -981,14 +1036,7 @@ async function loadChurchStats(){
  renderCplist();
 }
 loadChurchStats();
-$("teams").innerHTML=TEAMS.map(x=>{
-  const cat=x.c==="tm-a"?"a":x.c==="tm-b"?"b":"c";
-  return `<div class="tmc">
-    <span class="stt-b ${cat}">${x.g}</span>
-    <p class="tmc-n">${x.t}</p>
-    ${x.r.map(([ch,w])=>`<div class="tmc-r"><b>${ch}</b><span>${w}</span></div>`).join("")}
-  </div>`;
-}).join("");
+$("teams").innerHTML=ganttHTML();
 
 /* 준비 & 안전 이미지 확대 보기 */
 function zoomImg(src,alt){
