@@ -125,11 +125,6 @@ input{font-family:inherit;outline:none}
 .tm-b2{background:var(--sea-l);color:var(--sea-d)}
 .tm-c{background:var(--nvy-l);color:var(--nvy-d)}
 .tm-n{font-size:14px;font-weight:700;letter-spacing:-.025em}
-.tm-r{display:flex;align-items:center;gap:9px;padding:8px 0;border-top:1px solid var(--line2)}
-.tm-r span:first-child{font-size:13px;font-weight:500;flex:1;min-width:0;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tm-w{font-size:11.5px;color:var(--sea-d);background:var(--sea-l);border-radius:999px;
-  padding:3px 9px;font-weight:600;white-space:nowrap;flex-shrink:0}
 
 .sch-open{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:16px 18px;
   border-radius:18px;border:1px solid var(--line);box-shadow:var(--sh);transition:.18s;margin-top:14px;
@@ -201,16 +196,6 @@ input{font-family:inherit;outline:none}
 .stat .ic{width:18px;height:18px;color:var(--sky-d);margin-bottom:9px}
 .stat .k{font-size:11.5px;color:var(--tx3)}
 .stat .v{font-size:14.5px;font-weight:700;margin-top:2px;letter-spacing:-.02em}
-
-/* schedule */
-.day{padding:22px}
-.day-h{display:flex;align-items:baseline;gap:8px;margin-bottom:14px}
-.day-n{font-size:13px;font-weight:700;color:var(--sky-d)}
-.day-d{font-size:12px;color:var(--tx3)}
-.item{display:flex;gap:12px;margin-bottom:11px}
-.item:last-child{margin-bottom:0}
-.item .t{font-size:12px;color:var(--tx3);width:44px;flex-shrink:0;font-variant-numeric:tabular-nums;padding-top:1px}
-.item .d{font-size:13.5px;color:var(--tx2);line-height:1.5}
 
 /* photo scroll */
 .scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px;margin:0 -22px;padding-left:22px;padding-right:22px;
@@ -316,8 +301,6 @@ input{font-family:inherit;outline:none}
 .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55}
 .pg-t{font-size:29px;font-weight:700;letter-spacing:-.035em}
 .pg-s{font-size:14px;color:var(--tx3);margin-top:6px}
-.divide>div{border-bottom:1px solid var(--line2)}
-.divide>div:last-child{border-bottom:none}
 
 /* album */
 .al{position:relative}
@@ -676,11 +659,6 @@ input{font-family:inherit;outline:none}
       <h1 class="pg-t" id="ch-name"></h1>
     </div>
 
-    <section class="sec" id="ch-sched-sec">
-      <div class="sec-h"><h2 class="sec-t">사역 스케줄</h2></div>
-      <div class="card divide" id="ch-sched"></div>
-    </section>
-
     <section class="sec">
       <div class="sec-h">
         <div><h2 class="sec-t">사역 앨범</h2><p class="sec-s" id="ch-album-cnt">0장</p></div>
@@ -999,12 +977,6 @@ $("tl").innerHTML=SC.map((x,di)=>`<div class="tl-d${di===0?' open':''}" data-day
 </div>`).join("");
 function toggleDay(i){const el=document.querySelector('.tl-d[data-day="'+i+'"]');if(el)el.classList.toggle("open");}
 
-const schedHTML=SC.map(x=>`<div class="day">
-  <div class="day-h"><span class="day-n">${x.d}</span><span class="day-d">${x.dt}</span></div>
-  ${x.i.map(([t,v])=>`<div class="item"><span class="t">${t}</span><span class="d">${v}</span></div>`).join("")}
-</div>`).join("");
-$("ch-sched").innerHTML=schedHTML;
-
 let churchStats={};
 function renderCplist(){
  $("cplist").innerHTML=CH.map((c,i)=>{
@@ -1255,20 +1227,6 @@ function openCh(i){cur=i;const c=CH[i];
  $("ch-top").textContent=c.n;$("ch-name").textContent=c.n;
  const tag=$("ch-tag");tag.className="tag "+c.c;
  $("ch-band").style.backgroundImage=`url(${CPIC[c.id]})`;
- const rows=[];
- TEAMS.forEach(t=>t.r.forEach(([ch,w])=>{if(ch===c.n)rows.push([w,t.t])}));
- const coop=rows.length?`<div class="day">
-   <div class="day-h"><span class="day-n">협력 사역</span><span class="day-d">타 교회 지원 팀</span></div>
-   ${rows.map(([w,t])=>`<div class="tm-r"><span>${t}</span><span class="tm-w">${w}</span></div>`).join("")}
- </div>`:"";
- // 교회별 내부 시간표(CHTT)는 기상 상황에 따라 유동적이라 제공하지 않는다 — 협력 사역(타 교회 지원)만 표시
- if(coop){
-  $("ch-sched-sec").style.display="block";
-  $("ch-sched").innerHTML=coop;
- }else{
-  $("ch-sched-sec").style.display="none";
-  $("ch-sched").innerHTML="";
- }
  $("ch-bandtx").textContent=`${c.n} · 전남 완도군 소안도`;
  renderAlbum(c.id);
  loadMemos(c.id);
