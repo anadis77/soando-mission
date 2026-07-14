@@ -121,12 +121,15 @@ input{font-family:inherit;outline:none}
 
 /* ---- 협력 사역 일정 매트릭스(원본 표 그대로: 교회 x 요일 x 오전/오후) ---- */
 .tg-wrap{border:1px solid var(--line);border-radius:14px;overflow:hidden;overflow-x:auto;background:#fff;box-shadow:var(--sh);-webkit-overflow-scrolling:touch}
-.tg{border-collapse:collapse;width:100%;min-width:1180px;table-layout:fixed}
-.tg th,.tg td{border:1px solid var(--line2);padding:0;text-align:center;vertical-align:middle}
+/* border-collapse:separate 사용 — sticky 셀과 border-collapse:collapse를 같이 쓰면
+   스크롤 고정 경계에서 테두리가 겹쳐 진하게(검게) 보이는 렌더링 버그가 생긴다.
+   그래서 각 셀은 오른쪽·아래쪽 선만 그어 다른 표와 같은 옅은 회색 격자로 통일한다. */
+.tg{border-collapse:separate;border-spacing:0;width:100%;min-width:1180px;table-layout:fixed}
+.tg th,.tg td{border:0;border-right:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:0;text-align:center;vertical-align:middle}
 .tg thead tr:nth-child(1) th{background:var(--nvy);color:#fff;font-size:12px;font-weight:700;padding:9px 4px;letter-spacing:-.02em;border-color:var(--nvy-d)}
 .tg thead tr:nth-child(2) th{background:var(--sea);color:#fff;font-size:11.5px;font-weight:700;padding:7px 2px;border-color:var(--sea-d)}
 .tg thead tr:nth-child(3) th{background:var(--sky-l);color:var(--tx2);font-size:10.5px;font-weight:700;padding:6px 2px;border-color:var(--line)}
-.tg thead .tg-corner1,.tg thead .tg-corner2{background:var(--isl-l)!important;color:var(--tx)!important;font-size:11.5px}
+.tg thead .tg-corner1,.tg thead .tg-corner2{background:var(--isl-l)!important;color:var(--tx)!important;font-size:11.5px;border-color:var(--line)!important}
 /* 좌측 팀 이름 2개 열은 가로 스크롤 중에도 고정(sticky) — 스크롤해도 어느 팀 줄인지 계속 보이게 */
 .tg-corner1,.tg-cat{position:sticky;left:0;z-index:5;width:56px;background:#EDF2F5;color:var(--tx2);font-size:11px;font-weight:700;padding:5px 3px;line-height:1.35}
 .tg-cat[colspan]{box-shadow:2px 0 5px rgba(15,42,56,.09)}
