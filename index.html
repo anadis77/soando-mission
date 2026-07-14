@@ -815,15 +815,17 @@ input{font-family:inherit;outline:none}
 <div class="mask" id="memomask" onclick="if(event.target===this)closeMemo()">
   <div class="modal">
     <div class="m-h">
-      <span class="m-t"><span id="memo-ch-name">교회</span> 마음 나누기</span>
+      <span class="m-t">마음 나누기</span>
       <button class="m-x" onclick="closeMemo()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="m-b">
+      <label class="lb">교회 선택 <span class="req">*</span></label>
+      <div class="chips" id="memo-ch"></div>
       <label class="lb">이름 <span class="opt">(선택)</span><span class="cnt" id="memo-name-cnt">0/20</span></label>
       <input class="inp" id="memo-name" placeholder="예) 이미용팀 · 김집사" maxlength="20" oninput="$('memo-name-cnt').textContent=this.value.length+'/20'">
       <label class="lb">느낀 점 · 감사 · 짧은 기도 <span class="req">*</span><span class="cnt" id="memo-content-cnt">0/150</span></label>
       <textarea class="inp ta" id="memo-content" rows="4" placeholder="선교하며 느낀 점, 감사했던 순간, 짧은 기도 등을 자유롭게 적어주세요." maxlength="150" oninput="$('memo-content-cnt').textContent=this.value.length+'/150'"></textarea>
-      <p class="note">여기 남긴 글은 이 교회 페이지에서 함께 볼 수 있어요.</p>
+      <p class="note">여기 남긴 글은 선택한 교회 페이지에서 함께 볼 수 있어요.</p>
     </div>
     <div class="m-f">
       <button class="btn-gray" onclick="closeMemo()">취소</button>
@@ -1181,16 +1183,23 @@ function drawMemos(){
  $("ch-memo-pager").innerHTML=pagerHTML(memoPageIdx,MEMOS.length?total:1,"memoPage");
 }
 function memoPage(d){const total=Math.max(1,Math.ceil(MEMOS.length/MEMO_PAGE));memoPageIdx=Math.min(total-1,Math.max(0,memoPageIdx+d));drawMemos();}
-function openMemo(){$("memo-ch-name").textContent=CH[cur].n;$("memo-name").value="";$("memo-content").value="";$("memo-name-cnt").textContent="0/20";$("memo-content-cnt").textContent="0/150";$("memomask").classList.add("on");}
+function openMemo(){
+ $("memo-ch").innerHTML=CH.map((c,i)=>`<button class="chip sky ${i===cur?'on':''}" data-i="${i}" onclick="pick(this,'memo-ch')">${i===cur?CHK:''}${c.n}</button>`).join("");
+ $("memo-name").value="";$("memo-content").value="";$("memo-name-cnt").textContent="0/20";$("memo-content-cnt").textContent="0/150";$("memomask").classList.add("on");
+}
 function closeMemo(){$("memomask").classList.remove("on");}
 async function doMemo(){
+ const chEl=$("memo-ch").querySelector(".chip.on");
  const name=$("memo-name").value.trim(), content=$("memo-content").value.trim();
+ if(!chEl){alert("교회를 선택해주세요");return}
  if(!content){alert("나눌 내용을 입력해주세요");return}
+ const churchId=CH[+chEl.dataset.i].id;
  const btn=$("memo-submit");btn.disabled=true;btn.textContent="나누는 중...";
  try{
-  const{data:ins,error}=await sb.from("memos").insert({church_id:CH[cur].id,name:name||null,content,owner_token:OWNER_TOKEN}).select("id").single();
+  const{data:ins,error}=await sb.from("memos").insert({church_id:churchId,name:name||null,content,owner_token:OWNER_TOKEN}).select("id").single();
   if(error)throw error;
-  addMyMemo(ins.id); closeMemo(); await loadMemos(CH[cur].id);
+  addMyMemo(ins.id); closeMemo();
+  if(churchId===CH[cur].id) await loadMemos(CH[cur].id);
  }catch(e){alert("나누는 중 문제가 생겼어요: "+(e.message||e))}
  finally{btn.disabled=false;btn.textContent="나누기"}
 }
