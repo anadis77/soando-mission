@@ -126,9 +126,13 @@ input{font-family:inherit;outline:none}
 .tg thead tr:nth-child(1) th{background:var(--nvy);color:#fff;font-size:12px;font-weight:700;padding:9px 4px;letter-spacing:-.02em;border-color:var(--nvy-d)}
 .tg thead tr:nth-child(2) th{background:var(--sea);color:#fff;font-size:11.5px;font-weight:700;padding:7px 2px;border-color:var(--sea-d)}
 .tg thead tr:nth-child(3) th{background:var(--sky-l);color:var(--tx2);font-size:10.5px;font-weight:700;padding:6px 2px;border-color:var(--line)}
-.tg thead .tg-corner{background:var(--isl-l)!important;color:var(--tx)!important;font-size:11.5px}
-.tg-cat{width:56px;background:#EDF2F5;color:var(--tx2);font-size:11px;font-weight:700;padding:5px 3px;line-height:1.35}
-.tg-sub{width:34px;background:#F6F9FB;color:var(--tx3);font-size:11px;font-weight:600;padding:4px 2px}
+.tg thead .tg-corner1,.tg thead .tg-corner2{background:var(--isl-l)!important;color:var(--tx)!important;font-size:11.5px}
+/* 좌측 팀 이름 2개 열은 가로 스크롤 중에도 고정(sticky) — 스크롤해도 어느 팀 줄인지 계속 보이게 */
+.tg-corner1,.tg-cat{position:sticky;left:0;z-index:5;width:56px;background:#EDF2F5;color:var(--tx2);font-size:11px;font-weight:700;padding:5px 3px;line-height:1.35}
+.tg-cat[colspan]{box-shadow:2px 0 5px rgba(15,42,56,.09)}
+.tg-corner2,.tg-sub{position:sticky;left:56px;z-index:5;width:34px;background:#F6F9FB;color:var(--tx3);font-size:11px;font-weight:600;padding:4px 2px;
+  box-shadow:2px 0 5px rgba(15,42,56,.09)}
+.tg thead .tg-corner1{z-index:6}
 .tg-cell{width:28px;height:36px;background:#fff}
 .tg-cell.on{background:var(--sea);box-shadow:inset 0 0 0 1px var(--sea-d)}
 
@@ -950,11 +954,14 @@ const GANTT_ROWS=[
  {cat:"버스킹팀<br>(전도팀)", sub:null, cells:{"소안동부교회":{"16(목)":["오후"]},"비자리교회":{"17(금)":["오전"]},"소안미라교회":{"17(금)":["오후"]},"소안중앙교회":{"18(토)":["오전"]}}},
 ];
 function ganttHTML(){
- let head=`<thead><tr><th rowspan="3" class="tg-corner">구분</th><th class="tg-corner">교회명</th>`;
+ let cols=`<colgroup><col style="width:56px"><col style="width:34px">`;
+ GANTT_CH.forEach(()=>GANTT_DAYS.forEach(()=>cols+=`<col style="width:28px"><col style="width:28px">`));
+ cols+=`</colgroup>`;
+ let head=`<thead><tr><th rowspan="3" class="tg-corner1">구분</th><th class="tg-corner2">교회명</th>`;
  GANTT_CH.forEach(ch=>head+=`<th colspan="6">${ch}</th>`);
- head+=`</tr><tr><th class="tg-corner">요일</th>`;
+ head+=`</tr><tr><th class="tg-corner2">요일</th>`;
  GANTT_CH.forEach(()=>GANTT_DAYS.forEach(d=>head+=`<th colspan="2">${d}</th>`));
- head+=`</tr><tr><th class="tg-corner">시간</th>`;
+ head+=`</tr><tr><th class="tg-corner2">시간</th>`;
  GANTT_CH.forEach(()=>GANTT_DAYS.forEach(()=>head+=`<th>오전</th><th>오후</th>`));
  head+=`</tr></thead>`;
  let body="<tbody>", i=0;
@@ -977,7 +984,7 @@ function ganttHTML(){
   i=j;
  }
  body+="</tbody>";
- return `<div class="tg-wrap"><table class="tg">${head}${body}</table></div>
+ return `<div class="tg-wrap"><table class="tg">${cols}${head}${body}</table></div>
  <p class="note" style="margin-top:10px">※ 각 교회 팀장·조장은 익일 활동 예정 장소와 시간을 파견 교회 팀장·조장께 사전에 꼭 확인해 주세요.</p>`;
 }
 
