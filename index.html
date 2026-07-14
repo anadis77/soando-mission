@@ -408,7 +408,8 @@ input{font-family:inherit;outline:none}
 .pick-btn{display:flex;align-items:center;justify-content:center;gap:7px;height:44px;border-radius:12px;background:var(--sky-l);color:var(--sky-d);font-size:13px;font-weight:600;transition:.15s}
 .pick-btn:hover{background:#D3EAF6}
 .pick-btn svg{width:16px;height:16px}
-.lb{font-size:13px;font-weight:500;margin:22px 0 10px;display:block}
+.lb{font-size:13px;font-weight:500;margin:22px 0 10px;display:flex;align-items:baseline;gap:5px}
+.lb .cnt{margin-left:auto}
 .req{color:var(--cor-d)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{padding:0 15px;height:40px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--tx2);
@@ -834,8 +835,8 @@ input{font-family:inherit;outline:none}
       <div class="chips" id="m-ch"></div>
       <label class="lb">사역 종류 <span class="req">*</span></label>
       <div class="chips" id="m-mi"></div>
-      <label class="lb">한 줄 설명</label>
-      <input class="inp" id="m-cap" placeholder="예) 어르신들과 함께한 이미용 봉사">
+      <label class="lb">한 줄 설명 <span class="cnt" id="m-cap-cnt">0/40</span></label>
+      <input class="inp" id="m-cap" placeholder="예) 어르신들과 함께한 이미용 봉사" maxlength="40" oninput="$('m-cap-cnt').textContent=this.value.length+'/40'">
     </div>
     <div class="m-f">
       <button class="btn-gray" onclick="closeM()">취소</button>
@@ -873,8 +874,8 @@ input{font-family:inherit;outline:none}
     <div class="m-b">
       <label class="lb">이름 <span class="opt">(선택)</span></label>
       <input class="inp" id="memo-name" placeholder="예) 이미용팀 · 김집사" maxlength="40">
-      <label class="lb">느낀 점 · 감사 · 짧은 기도 <span class="req">*</span></label>
-      <textarea class="inp ta" id="memo-content" rows="4" placeholder="선교하며 느낀 점, 감사했던 순간, 짧은 기도 등을 자유롭게 적어주세요." maxlength="500"></textarea>
+      <label class="lb">느낀 점 · 감사 · 짧은 기도 <span class="req">*</span><span class="cnt" id="memo-content-cnt">0/150</span></label>
+      <textarea class="inp ta" id="memo-content" rows="4" placeholder="선교하며 느낀 점, 감사했던 순간, 짧은 기도 등을 자유롭게 적어주세요." maxlength="150" oninput="$('memo-content-cnt').textContent=this.value.length+'/150'"></textarea>
       <p class="note">여기 남긴 글은 이 교회 페이지에서 함께 볼 수 있어요.</p>
     </div>
     <div class="m-f">
@@ -1313,7 +1314,7 @@ function drawMemos(){
  $("ch-memo-pager").innerHTML=pagerHTML(memoPageIdx,MEMOS.length?total:1,"memoPage");
 }
 function memoPage(d){const total=Math.max(1,Math.ceil(MEMOS.length/MEMO_PAGE));memoPageIdx=Math.min(total-1,Math.max(0,memoPageIdx+d));drawMemos();}
-function openMemo(){$("memo-ch-name").textContent=CH[cur].n;$("memo-name").value="";$("memo-content").value="";$("memomask").classList.add("on");}
+function openMemo(){$("memo-ch-name").textContent=CH[cur].n;$("memo-name").value="";$("memo-content").value="";$("memo-content-cnt").textContent="0/150";$("memomask").classList.add("on");}
 function closeMemo(){$("memomask").classList.remove("on");}
 async function doMemo(){
  const name=$("memo-name").value.trim(), content=$("memo-content").value.trim();
@@ -1415,7 +1416,7 @@ function drawAlbum(){
 function openM(){
  $("m-ch").innerHTML=CH.map((c,i)=>`<button class="chip sky ${i===cur?'on':''}" data-i="${i}" onclick="pick(this,'m-ch')">${i===cur?CHK:''}${c.n}</button>`).join("");
  $("m-mi").querySelectorAll(".chip").forEach(c=>{c.classList.remove("on");c.innerHTML=c.textContent});
- picked=[];$("m-file").value="";$("m-cap").value="";
+ picked=[];$("m-file").value="";$("m-cap").value="";$("m-cap-cnt").textContent="0/40";
  $("m-drop-t").textContent="사진을 끌어다 놓거나 클릭하세요 (여러 장 가능)";
  $("mask").classList.add("on")}
 function closeM(){$("mask").classList.remove("on")}
