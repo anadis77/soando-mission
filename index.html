@@ -233,6 +233,9 @@ input{font-family:inherit;outline:none}
 .tt-matrix .tm-hl-b{background:#FDEEDC!important;color:#B26A1E!important;font-weight:700}
 .tt-matrix .tm-hl-y{background:#FCF04D!important;color:#5C5300!important;font-weight:700}
 .tt-matrix .tm-hl-blue{background:#5B8FD4!important;color:#fff!important;font-weight:700}
+/* 종료 시각 경계 행 — 개인시간이 22:00에 끝남을 축에 표시(얇은 라벨 줄) */
+.tt-matrix .tt-end td{height:auto;padding:2px 4px;border-bottom:none;background:#fff}
+.tt-matrix .tt-end .hr{color:var(--tx3);font-size:11px;background:#F6F9FB}
 .tt-lg i{width:11px;height:11px;border-radius:3px;border:1px solid var(--line);display:block}
 
 /* photo scroll */
@@ -1095,12 +1098,12 @@ function ttHTML(T){
  });
 
  let h1=`<th class="hr" rowspan="2">시간</th>`, h2="";
- let colgroup=`<col style="width:44px">`; let totalW=44;
+ let colgroup=`<col style="width:44px">`; let totalW=44; let dataCols=0;
  days.forEach(d=>{
-  if(d.roles.length<=1){ h1+=`<th rowspan="2">${d.label}</th>`; colgroup+=`<col style="width:120px">`; totalW+=120; }
+  if(d.roles.length<=1){ h1+=`<th rowspan="2">${d.label}</th>`; colgroup+=`<col style="width:120px">`; totalW+=120; dataCols+=1; }
   else{
    h1+=`<th colspan="${d.roles.length}">${d.label}</th>`;
-   d.roles.forEach(role=>{ h2+=`<th class="tm-role">${role}</th>`; colgroup+=`<col style="width:72px">`; totalW+=72; });
+   d.roles.forEach(role=>{ h2+=`<th class="tm-role">${role}</th>`; colgroup+=`<col style="width:72px">`; totalW+=72; dataCols+=1; });
   }
  });
 
@@ -1138,6 +1141,10 @@ function ttHTML(T){
   });
   body+="</tr>";
  }
+ // 마지막 종료 시각 라벨(예: 22:00) — 개인시간이 어디서 끝나는지 축에 표시
+ const lastHr=T.hours[R-1], lp=lastHr.split(":").map(Number), endMin=lp[0]*60+lp[1]+30;
+ const endLabel=String(Math.floor(endMin/60)).padStart(2,"0")+":"+String(endMin%60).padStart(2,"0");
+ body+=`<tr class="tt-end"><td class="hr">${endLabel}</td><td colspan="${dataCols}"></td></tr>`;
 
  return `<div class="tt-wrap"><table class="tt tt-matrix" style="min-width:${totalW}px"><colgroup>${colgroup}</colgroup><thead><tr>${h1}</tr><tr>${h2}</tr></thead><tbody>${body}</tbody></table></div>
  <div class="tt-lg">
