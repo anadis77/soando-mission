@@ -229,6 +229,8 @@ input{font-family:inherit;outline:none}
 .tt-matrix .tm-hl-a{background:var(--sky-l)!important;color:var(--sea-d)!important;font-weight:700}
 /* 좌측 "시간" 열은 가로 스크롤 중에도 고정 — 어느 시각 줄인지 계속 보이게 */
 .tt-matrix .hr{position:sticky;left:0;z-index:5;box-shadow:2px 0 5px rgba(15,42,56,.09)}
+/* 시간 라벨을 칸 위쪽(경계선)에 붙임 — 블록이 시작~끝 라벨 사이에 정확히 놓여 "끝시각 착시" 방지 */
+.tt-matrix td.hr{vertical-align:top;padding-top:2px}
 .tt-matrix thead th.hr{z-index:6}
 .tt-matrix .tm-hl-b{background:#FDEEDC!important;color:#B26A1E!important;font-weight:700}
 .tt-matrix .tm-hl-y{background:#FCF04D!important;color:#5C5300!important;font-weight:700}
