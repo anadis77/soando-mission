@@ -558,6 +558,14 @@ input{font-family:inherit;outline:none}
 @media(max-width:899px){.izoom img{width:165vw}}
 .izoom-x{position:fixed;top:16px;right:16px;z-index:2;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.16);color:#fff;backdrop-filter:blur(6px)}
 .izoom-x:hover{background:rgba(255,255,255,.28)}
+/* 사진 저장(다운로드) 버튼 — Supabase ?download 로 실제 파일 저장 */
+.izoom-dl{position:fixed;top:16px;right:66px;z-index:2;height:42px;padding:0 15px;border-radius:999px;display:none;align-items:center;gap:7px;
+  background:rgba(255,255,255,.16);color:#fff;font-size:13.5px;font-weight:700;backdrop-filter:blur(6px);text-decoration:none}
+.izoom-dl.on{display:inline-flex}
+.izoom-dl:hover{background:rgba(255,255,255,.28)}
+.izoom-dl svg{width:17px;height:17px}
+/* 사진은 눌러서 크게 보기 */
+.al-img,.ph-img{cursor:pointer}
 /* 협력 사역 팀 배지 */
 .stt-b{display:inline-flex;align-items:center;height:22px;padding:0 9px;border-radius:999px;font-size:11px;font-weight:700;width:fit-content}
 .stt-b.a{background:var(--cor-l);color:var(--cor-d)}
@@ -799,6 +807,7 @@ input{font-family:inherit;outline:none}
 
 <!-- 이미지 확대 보기 -->
 <div class="izoom" id="izoom" onclick="if(event.target===this||event.target.id==='iz-scroll')closeImg()">
+  <a class="izoom-dl" id="iz-dl" href="#" aria-label="사진 저장"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>저장</a>
   <button class="izoom-x" onclick="closeImg()" aria-label="닫기"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
   <div class="iz-scroll" id="iz-scroll"><img id="iz-img" alt=""></div>
 </div>
@@ -1066,9 +1075,29 @@ $("teams").innerHTML=ganttHTML();
 /* 준비 & 안전 이미지 확대 보기 */
 function zoomImg(src,alt){
  $("iz-img").src=src; $("iz-img").alt=alt||"";
+ $("iz-dl").classList.remove("on");           // 안내 이미지에는 저장 버튼 숨김
  $("izoom").classList.add("on"); document.body.style.overflow="hidden";
 }
-function closeImg(){$("izoom").classList.remove("on");document.body.style.overflow="";$("iz-img").src="";}
+/* 앨범/사역현장 사진 크게 보기 + 저장.
+   Supabase 공개 URL에 ?download=파일명 을 붙이면 서버가 Content-Disposition을 내려줘
+   외부 도메인이어도 실제 파일로 저장된다(<a download> 속성만으론 안 됨). */
+function openPhoto(url,name){
+ const fn=name||"소안도.jpg";
+ $("iz-img").src=url; $("iz-img").alt=fn;
+ const dl=$("iz-dl");
+ dl.href=url+(url.includes("?")?"&":"?")+"download="+encodeURIComponent(fn);
+ dl.setAttribute("download",fn);
+ dl.classList.add("on");
+ $("izoom").classList.add("on"); document.body.style.overflow="hidden";
+}
+/* 저장 파일명: 소안도_교회_사역_날짜.jpg (경로·따옴표 등 안전하게 정리) */
+function photoName(p){
+ const c=CH.find(x=>x.id===p.church_id), d=new Date(p.created_at);
+ const mm=String(d.getMonth()+1).padStart(2,"0"), dd=String(d.getDate()).padStart(2,"0");
+ const safe=s=>String(s||"").replace(/[\\/:*?"<>|']/g,"").replace(/\s+/g,"");
+ return `소안도_${safe(c?c.n:p.church_id)}_${safe(p.ministry_type)}_${mm}${dd}.jpg`;
+}
+function closeImg(){$("izoom").classList.remove("on");document.body.style.overflow="";$("iz-img").src="";$("iz-dl").classList.remove("on");}
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("izoom").classList.contains("on"))closeImg();});
 
 
@@ -1171,7 +1200,7 @@ async function loadPhotos(){
  const cards=data.map(p=>{
   const url=sb.storage.from(PHOTO_BUCKET).getPublicUrl(p.storage_path).data.publicUrl;
   const c=CH.find(x=>x.id===p.church_id);
-  return `<div class="ph">${isMine(p.id)?DEL_BTN(p.id):""}<div class="ph-img" style="background-image:url(${url})">${p.caption?`<div class="cap-ov"><span>${esc(p.caption)}</span></div>`:""}</div>
+  return `<div class="ph">${isMine(p.id)?DEL_BTN(p.id):""}<div class="ph-img" style="background-image:url(${url})" onclick="openPhoto('${url}','${photoName(p)}')">${p.caption?`<div class="cap-ov"><span>${esc(p.caption)}</span></div>`:""}</div>
    <p class="ph-t">${p.ministry_type}</p><p class="ph-s">${c?c.n:p.church_id}</p></div>`}).join("");
  // 사진을 두 벌 이어 붙여 끊김 없이 순환시킨다
  el.innerHTML=`<div class="mq-track">${cards}${cards}</div>`;
@@ -1412,7 +1441,7 @@ function drawAlbum(){
  $("ch-album").innerHTML=list.length?list.map(p=>{
   const url=sb.storage.from(PHOTO_BUCKET).getPublicUrl(p.storage_path).data.publicUrl;
   const d=new Date(p.created_at);
-  return `<div class="al">${isMine(p.id)?DEL_BTN(p.id):""}<div class="al-img" style="background-image:url(${url})">${p.caption?`<div class="cap-ov"><span>${esc(p.caption)}</span></div>`:""}</div>
+  return `<div class="al">${isMine(p.id)?DEL_BTN(p.id):""}<div class="al-img" style="background-image:url(${url})" onclick="openPhoto('${url}','${photoName(p)}')">${p.caption?`<div class="cap-ov"><span>${esc(p.caption)}</span></div>`:""}</div>
    <p class="al-t">${p.ministry_type}</p><p class="al-s">${d.getMonth()+1}. ${d.getDate()}</p></div>`}).join("")
   :`<p class="note">아직 이 교회에 올라온 사진이 없어요.</p>`;
 }
